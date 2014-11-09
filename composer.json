@@ -1,0 +1,31 @@
+{
+  "name": "groupby/api",
+  "description": "GroupBy Inc. Searchandiser PHP API.",
+  "type": "library",
+  "homepage": "http://www.github.com/groupby/api-php",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Ben Teichman",
+      "role": "developer"
+    }
+  ],
+  "support": {
+    "issues": "https://github.com/groupby/api-php/issues"
+  },
+  "require": {
+    "php": ">=5.4.0",
+    "groupby/serializer": "0.16.1",
+    "2tvenom/cborencode": "dev-master"
+  },
+  "require-dev": {
+    "monolog/monolog": "1.11.0",
+    "phpunit/phpunit": "4.3.5",
+    "mockery/mockery": "0.9.2"
+  },
+  "autoload": {
+    "classmap": [
+      "src/API/"
+    ]
+  }
+}

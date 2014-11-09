@@ -1,0 +1,17 @@
+.DS_Store
+*.iml
+*.zip
+*.gz
+*.tgz
+*~
+.idea/
+vendor/
+composer.lock
+
+# User-specific files
+*.suo
+*.user
+*.sln.docstates
+*.v12
+*.csproj
+*.sln
