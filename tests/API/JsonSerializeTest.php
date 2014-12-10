@@ -275,7 +275,7 @@ class JsonSerializeTest extends PHPUnit_Framework_TestCase
     {
         $this->assertJsonStringEqualsJsonString('{"clientKey":"adf7h8er7h2r","collection":"ducks",' .
             '"area":"surface","skip":12,"pageSize":30,"biasingProfile":"ballooning","language":"en",' .
-            '"pruneRefinements":true,"returnBinary":false,"searchString":"cantaloupe",' .
+            '"pruneRefinements":true,"returnBinary":false,"query":"cantaloupe",' .
             '"sort":' . self::$JSON_SORT . ',"fields":["pineapple","grape","clementine"],' .
             '"orFields":["pumpernickel","rye"],"navigations":[' . JsonDeserializeTest::$JSON_NAVIGATION . '],' .
             '"customUrlParams":[' . self::$JSON_CUSTOM_URL_PARAM . ']}',
