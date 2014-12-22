@@ -13,6 +13,13 @@ class UriBuilder
     const QUERY_KEY_VALUE_DIVIDER = "=";
     const FRAGMENT_DIVIDER = "#";
 
+    private static $SCHEME_PATTERN = "@(.*)://.*@";
+    private static $USER_INFO_PATTERN = "~(?:.*://)?(.*[:]?.*)@.*~";
+    private static $HOST_PATTERN = "~(?:.*@)?([^/]*)(?:/.*)?~";
+    private static $PATH_PATTERN = "@(?:(?:.*://)?[^/]*)?(/[^?]*)+(?:\\?.*)?@";
+    private static $QUERY_PATTERN = "~.*?\\?([^#]*)(?:#.*)?~";
+    private static $FRAGMENT_PATTERN = "~.*#(.*)~";
+
     /** @var string */
     private $scheme;
     /** @var string */
@@ -170,57 +177,68 @@ class UriBuilder
     {
         $this->clean();
 
-        $matches = array();
+        self::executeIfMatches(function ($match) {
+            $this->scheme = $match;
+        }, self::$SCHEME_PATTERN, $uriString);
 
-        $schemePattern = "@(.*)" . self::SCHEME_DIVIDER . ".*@";
-        if (preg_match($schemePattern, $uriString, $matches)) {
-            $this->scheme = $matches[1];
-        }
-
-        $userInfoPattern = "~(?:.*" . self::SCHEME_DIVIDER . ")?(.*[" . self::PORT_DIVIDER . "]?.*)" .
-            self::USER_INFO_DIVIDER . ".*~";
-        if (preg_match($userInfoPattern, $uriString, $matches)) {
-            $userSplit = explode(self::PORT_DIVIDER, $matches[1]);
-            if (!empty($userSplit[0])) {
-                $this->user = $userSplit[0];
-                if (count($userSplit) == 2 && $userSplit[1] != null) {
-                    $this->password = $userSplit[1];
+        self::executeIfMatches(function ($match) {
+            self::splitAndExecute(function (array $matches) {
+                if (!empty($matches[0])) {
+                    $this->user = $matches[0];
+                    if (count($matches) == 2 && $matches[1] != null) {
+                        $this->password = $matches[1];
+                    }
                 }
-            }
-        }
+            }, self::PORT_DIVIDER, $match);
+        }, self::$USER_INFO_PATTERN, $uriString);
 
-        $hostPattern = "~(?:.*" . self::USER_INFO_DIVIDER . ")?([^" .
-            self::PATH_DIVIDER . "]*)(?:" . self::PATH_DIVIDER . ".*)?~";
-        if (preg_match($hostPattern, $uriString, $matches)) {
-            $hostSplit = explode(self::PORT_DIVIDER, $matches[1]);
-            $this->host = $hostSplit[0];
-            if (count($hostSplit) == 2 && !empty($hostSplit[1])) {
-                $this->port = $hostSplit[1];
-            }
-        }
-
-        $pathPattern = "@(?:(?:.*" . self::SCHEME_DIVIDER . ")?[^" . self::PATH_DIVIDER . "]*)?(" .
-            self::PATH_DIVIDER . "[^" . self::QUERY_DIVIDER . "]*)+(?:\\" . self::QUERY_DIVIDER . ".*)?@";
-        if (preg_match($pathPattern, $uriString, $matches)) {
-            $this->path = $matches[1];
-        }
-
-        $queryPattern = "~.*?\\" . self::QUERY_DIVIDER . "([^" . self::FRAGMENT_DIVIDER . "]*)(?:" .
-            self::FRAGMENT_DIVIDER . ".*)?~";
-        if (preg_match($queryPattern, $uriString, $matches)) {
-            $params = explode(self::QUERY_PARAM_DIVIDER, $matches[1]);
-            foreach ($params as $param) {
-                $keyValue = explode(self::QUERY_KEY_VALUE_DIVIDER, $param);
-                if (count($keyValue) == 2) {
-                    $this->setParameter(urldecode($keyValue[0]), urldecode($keyValue[1]));
+        self::executeIfMatches(function ($match) {
+            self::splitAndExecute(function (array $matches) {
+                $this->host = $matches[0];
+                if (count($matches) == 2 && !empty($matches[1])) {
+                    $this->port = $matches[1];
                 }
-            }
-        }
+            }, self::PORT_DIVIDER, $match);
+        }, self::$HOST_PATTERN, $uriString);
 
-        $fragmentPattern = "~.*" . self::FRAGMENT_DIVIDER . "(.*)~";
-        if (preg_match($fragmentPattern, $uriString, $matches)) {
-            $this->fragment = $matches[1];
+        self::executeIfMatches(function ($match) {
+            $this->path = $match;
+        }, self::$PATH_PATTERN, $uriString);
+
+        self::executeIfMatches(function ($match) {
+            self::splitAndExecute(function (array $matches) {
+                foreach ($matches as $param) {
+                    self::splitAndExecute(function (array $keyValue) {
+                        if (count($keyValue) == 2) {
+                            $this->setParameter(urldecode($keyValue[0]), urldecode($keyValue[1]));
+                        }
+                    }, self::QUERY_KEY_VALUE_DIVIDER, $param);
+                }
+            }, self::QUERY_PARAM_DIVIDER, $match);
+        }, self::$QUERY_PATTERN, $uriString);
+
+        self::executeIfMatches(function ($match) {
+            $this->fragment = $match;
+        }, self::$FRAGMENT_PATTERN, $uriString);
+    }
+
+    private static function executeIfMatches($function, $pattern, $uriString)
+    {
+        $matches = [];
+        if (preg_match($pattern, $uriString, $matches)) {
+            $function($matches[1]);
         }
+    }
+
+    /**
+     * @param $function
+     * @param $divider
+     * @param $string
+     */
+    private static function splitAndExecute($function, $divider, $string)
+    {
+        $params = explode($divider, $string);
+        $function($params);
     }
 
     private function clean()
