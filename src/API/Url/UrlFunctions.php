@@ -2,8 +2,9 @@
 
 namespace GroupByInc\API\Url;
 
+use GroupByInc\API\Model\Navigation;
 use GroupByInc\API\Model\Refinement;
-use GroupByInc\API\Model\Query;
+use GroupByInc\API\Query;
 use GroupByInc\API\Util\ArrayUtils;
 use RuntimeException;
 
@@ -11,79 +12,106 @@ class UrlFunctions
 {
 
     /**
-     * @param string       $identifier The unique url beautifier identifier.
+     * @param string       $identifier     The unique url beautifier identifier.
      * @param string       $searchString
-     * @param Refinement[] $refinements
-     * @param Refinement   $refinement
+     * @param Navigation[] $navigations    List of currently selected navigations. It will be updated to include the
+     *                                     specified refinement
+     * @param string       $navigationName Name of the navigation to add the refinement to.
+     * @param Refinement   $refinement     Refinement to add.
      * @return string
      * @throws RuntimeException
      */
-    public static function toUrlAdd($identifier, $searchString, array $refinements, Refinement $refinement)
+    public static function toUrlAdd($identifier, $searchString, array &$navigations, $navigationName, Refinement $refinement)
     {
         $beautifier = self::getBeautifier($identifier);
-        $query = self::addRefinements($refinements, $refinement);
+        $query = self::addRefinements($navigations, $navigationName, $refinement);
+        $navigations = $query->getNavigations();
         return $beautifier->toUrl($searchString, $query->getRefinementString());
     }
 
     /**
-     * @param Query        $query
      * @param string       $identifier
      * @param string       $searchString
-     * @param Refinement[] $refinements
-     * @param Refinement   $refinement
-     * @return string
+     * @param Navigation[] $navigations    List of currently selected navigations. It will be updated to no longer
+     *                                     include the specified refinement.
+     * @param string       $navigationName Name of the navigation to remove the refinement from.
+     * @param Refinement   $refinement     Refinement to remove.
+     * @return string Updated URL.
      * @throws RuntimeException
      */
-    public static function toUrlRemove(Query $query, $identifier, $searchString, array $refinements, Refinement $refinement)
+    public static function toUrlRemove($identifier, $searchString, array &$navigations, $navigationName, Refinement $refinement)
     {
         $beautifier = self::getBeautifier($identifier);
-        $trimmedRefinements = self::removeRefinements($query, $refinements, $refinement);
-        return $beautifier->toUrl($searchString, $trimmedRefinements->getRefinementString());
+        $query = self::removeRefinements($navigations, $navigationName, $refinement);
+        $navigations = $query->getNavigations();
+        return $beautifier->toUrl($searchString, $query->getRefinementString());
     }
 
     /**
-     * @param Query        $query
-     * @param Refinement[] $refinements
+     * @param Navigation[] $navigations
+     * @param string       $navigationName
      * @param Refinement   $refinement
      * @return Query
      * @throws RuntimeException
      */
-    private static function removeRefinements(Query $query, array $refinements, Refinement $refinement)
+    private static function removeRefinements(array $navigations, $navigationName, Refinement $refinement)
     {
-        $query->setRefinements(array_merge($query->getRefinements(), $refinements));
+        $query = new Query();
+        $newNavigations = &$query->getNavigations();
+
+        foreach ($navigations as $n) {
+            $newNavigations[$n->getName()] = $n;
+        }
         $stringRefinements = $query->getRefinementString();
+        $query = new Query();
         $query->addRefinementsByString($stringRefinements);
-        $refinements = $query->getRefinements();
-        if ($refinements == null) {
+        $newNavigations = &$query->getNavigations();
+        if ($newNavigations == null) {
             throw new RuntimeException("No existing refinements so cannot remove a refinement");
         }
+
         if ($refinement != null) {
-            foreach ($refinements as $r) {
-                if ($r->toTildeString() == $refinement->toTildeString()) {
-                    ArrayUtils::remove($refinements, $r);
+            foreach ($newNavigations as $n) {
+                if ($n->getName() == $navigationName) {
+                    $refinements = &$n->getRefinements();
+                    foreach ($refinements as $r) {
+                        if ($r->toTildeString() == $refinement->toTildeString()) {
+                            ArrayUtils::remove($refinements, $r);
+                        }
+                    }
+                    if (empty($refinements)) {
+                        ArrayUtils::remove($newNavigations, $n);
+                    }
                 }
             }
         }
-        $query = new Query();
-        $query->setRefinements(array_merge($query->getRefinements(), $refinements));
         return $query;
     }
 
     /**
-     * @param Refinement[] $refinements
+     * @param Navigation[] $navigations
+     * @param string       $navigationName
      * @param Refinement   $refinement
      * @return Query
      */
-    private static function addRefinements(array $refinements, Refinement $refinement)
+    private static function addRefinements(array $navigations, $navigationName, Refinement $refinement)
     {
         $query = new Query();
-        if ($refinements != null) {
-            $arr = array_merge($query->getRefinements(), $refinements);
-            $query->setRefinements($arr);
+        $newNavigations = &$query->getNavigations();
+        if ($navigations != null) {
+            foreach ($navigations as $n) {
+                $newNavigations[$n->getName()] = $n;
+            }
+        }
+        if (!array_key_exists($navigationName, $newNavigations)) {
+            $navigation = new Navigation();
+            $navigation->setName($navigationName);
+            $newNavigations[$navigationName] = $navigation;
         }
         if ($refinement != null) {
-            array_push($query->getRefinements(), $refinement);
+            array_push($query->getNavigations()[$navigationName]->getRefinements(), $refinement);
         }
+
         return $query;
     }
 
@@ -95,11 +123,10 @@ class UrlFunctions
     private static function getBeautifier($identifier)
     {
         $beautifiers = UrlBeautifier::getUrlBeautifiers();
-        $beautifier = $beautifiers[$identifier];
-        if ($beautifier == null) {
-            throw new RuntimeException("Error: could not find UrlBeautifier named: " . $identifier . ". Please call
-            UrlBeautifier::createUrlBeautifier(string) to instantiate");
+        if (!array_key_exists($identifier, $beautifiers)) {
+            throw new RuntimeException("Error: could not find UrlBeautifier named: " . $identifier .
+                ". Please call UrlBeautifier::createUrlBeautifier(string) to instantiate");
         }
-        return $beautifier;
+        return $beautifiers[$identifier];
     }
 }
