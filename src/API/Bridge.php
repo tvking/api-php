@@ -59,6 +59,11 @@ class Bridge
     {
         $content = $query->getBridgeJson($this->clientKey);
         $this->session->setOption(CURLOPT_POSTFIELDS, $content);
+        if ($query->getCompressResponse()) {
+            $this->session->setOption(CURLOPT_ENCODING, 'gzip');
+        } else {
+            $this->session->setOption(CURLOPT_ENCODING, '');
+        }
 
         $json_response = $this->session->execute();
         $status = $this->session->getHttpStatusCode();
@@ -72,7 +77,37 @@ class Bridge
             throw new RuntimeException("Error: bridge at URL $this->bridgeUrl did not return the expected JSON response, it returned: " . $type . " instead");
         }
 
-        return $this->deserialize($json_response);
+        $responseBody = $this->getBody($json_response);
+        if (strpos($this->getContentEncoding($json_response), 'gzip') !== FALSE) {
+            $responseBody = gzdecode($responseBody);
+        }
+
+        return $this->deserialize($responseBody);
+    }
+
+    private function getContentEncoding($response)
+    {
+        $headers = $this->getHeaders($response);
+        $arr = explode("\r\n", trim($headers));
+        foreach ($arr as $header) {
+            list($k, $v) = explode(':', $header);
+            if ('content-encoding' == strtolower($k)) {
+                return trim($v);
+            }
+        }
+        return false;
+    }
+
+    private function getHeaders($response)
+    {
+        $header_size = $this->session->getInfo(CURLINFO_HEADER_SIZE);
+        return substr($response, 0, $header_size);
+    }
+
+    private function getBody($response)
+    {
+        $header_size = $this->session->getInfo(CURLINFO_HEADER_SIZE);
+        return substr($response, $header_size);
     }
 
     private function deserialize($json)

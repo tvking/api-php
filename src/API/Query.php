@@ -61,6 +61,9 @@ class Query
     /** @var Serializer */
     private $serializer;
 
+    /** @var CompressResponse */
+    private $compressResponse = false;
+
     public function __construct()
     {
         $this->serializer = SerializerBuilder::create()->build();
@@ -476,6 +479,22 @@ class Query
     public function setPageSize($pageSize)
     {
         $this->pageSize = $pageSize;
+    }
+
+    /**
+     * @return CompressResponse
+     */
+    public function getCompressResponse()
+    {
+        return $this->compressResponse;
+    }
+
+    /**
+     * @param $pCompressResponse
+     */
+    public function setCompressResponse($pCompressResponse)
+    {
+        $this->compressResponse = $pCompressResponse;
     }
 
 }
