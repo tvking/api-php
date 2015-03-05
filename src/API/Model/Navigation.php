@@ -12,7 +12,6 @@ class Order
 
 class Type
 {
-    const Currency = 'Currency';
     const Date = 'Date';
     const Float = 'Float';
     const Integer = 'Integer';
