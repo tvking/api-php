@@ -30,6 +30,11 @@ abstract class Refinement
      * @JMS\Type("integer")
      */
     private $count;
+    /**
+     * @var bool
+     * @JMS\Type("boolean")
+     */
+    private $exclude;
 
     /**
      * @return string The ID is a MD5 of the name and value of the refinement.
@@ -64,6 +69,24 @@ abstract class Refinement
     public function setCount($count)
     {
         $this->count = $count;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isExclude()
+    {
+        return $this->exclude;
+    }
+
+    /**
+     * @param boolean $exclude
+     * @return $this
+     */
+    public function setExclude($exclude)
+    {
+        $this->exclude = $exclude;
         return $this;
     }
 

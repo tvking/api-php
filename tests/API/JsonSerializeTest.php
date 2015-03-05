@@ -88,12 +88,14 @@ class JsonSerializeTest extends PHPUnit_Framework_TestCase
         self::$OBJ_REFINEMENT_RANGE->setId("342h9582hh4")
             ->setCount(14)
             ->setHigh("delicious")
-            ->setLow("atrocious");
+            ->setLow("atrocious")
+            ->setExclude(true);
 
         self::$OBJ_REFINEMENT_VALUE = new RefinementValue();
         self::$OBJ_REFINEMENT_VALUE->setId("fadfs89y10j")
             ->setCount(987)
-            ->setValue("malaise");
+            ->setValue("malaise")
+            ->setExclude(false);
 
         self::$OBJ_NAVIGATION = new Navigation();
         self::$OBJ_NAVIGATION->setName("green")
