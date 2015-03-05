@@ -2,8 +2,8 @@ language: php
 php:
 - 5.4
 - 5.5
-install: composer install
-script: phpunit --configuration phpunit.xml
+install: composer global require "codegyre/robo=0.5.2"
+script: robo test
 notifications:
   slack:
     secure: KOvox3VZpwOhFPGRdCD2r8wVxqixzB/cWIHF90d65RmvuJVYJ7nEV34NdtNFV87Jj77nqH4nsZDIR6d82drXhmYD/xkWw6IiGuPaFmq+LeWy4mXx1Fy9rjuJfvZKbZfaoho8QfYhksBxuSFdT6XVJi67yuv0Wv8OH4jMvOi3Gqk=

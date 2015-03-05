@@ -20,7 +20,8 @@
   "require-dev": {
     "monolog/monolog": "1.11.0",
     "phpunit/phpunit": "4.3.5",
-    "mockery/mockery": "0.9.2"
+    "mockery/mockery": "0.9.2",
+    "codegyre/robo": "0.5.2"
   },
   "autoload": {
     "classmap": [

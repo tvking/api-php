@@ -8,5 +8,7 @@ PHP API
 
 ### Setup Instructions
 
-1. install dependencies using `composer install`
-1. run tests with `phpunit -c phpunit.xml`
+For more on robo php taskrunner see [here](http://codegyre.github.io/Robo/).
+
+1. install dependencies using `robo build`
+1. run tests with `robo test`
