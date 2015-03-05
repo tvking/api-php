@@ -49,6 +49,8 @@ class Query
 //    private $returnBinary = false;
     /** @var bool */
     private $pruneRefinements = true;
+    /** @var bool */
+    private $disableAutocorrection = false;
 
     /** @var CustomUrlParam[] */
     private $customUrlParams = array();
@@ -495,6 +497,22 @@ class Query
     public function setCompressResponse($pCompressResponse)
     {
         $this->compressResponse = $pCompressResponse;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isDisableAutocorrection()
+    {
+        return $this->disableAutocorrection;
+    }
+
+    /**
+     * @param boolean $disableAutocorrection
+     */
+    public function setDisableAutocorrection($disableAutocorrection)
+    {
+        $this->disableAutocorrection = $disableAutocorrection;
     }
 
 }
