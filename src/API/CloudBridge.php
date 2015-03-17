@@ -7,7 +7,7 @@ class CloudBridge extends AbstractBridge
     const DOT = '.';
     const CLOUD_HOST = 'groupbycloud.com';
     const CLOUD_PORT = 443;
-    const CLOUD_PATH = 'api/v1';
+    const CLOUD_PATH = '/api/v1';
 
     /**
      * @param string $clientKey

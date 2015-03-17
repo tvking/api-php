@@ -4,8 +4,7 @@
          colors="true"
          processIsolation="false"
          stopOnFailure="false"
-         syntaxCheck="true"
-    >
+         syntaxCheck="true">
 
   <testsuites>
     <testsuite name="API Tests">

@@ -2,26 +2,7 @@
 
 namespace GroupByInc\API\Request;
 
-interface AbstractRequest
-{
-    public function setOption($name, $value);
-
-    public function execute();
-
-    public function getInfo($name);
-
-    public function close();
-
-    public function getError();
-
-    public function getErrorNumber();
-
-    public function getHttpStatusCode();
-
-    public function getHttpContentType();
-}
-
-class CurlRequest implements AbstractRequest
+class CurlRequest
 {
     private $handle = null;
 

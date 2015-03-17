@@ -63,7 +63,7 @@ class Query
     /** @var Serializer */
     private $serializer;
 
-    /** @var CompressResponse */
+    /** @var bool */
     private $compressResponse = false;
 
     public function __construct()
