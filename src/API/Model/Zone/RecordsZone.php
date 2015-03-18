@@ -11,7 +11,7 @@ class RecordsZone extends Zone
      * @var Record[]
      * @JMS\Type("array<GroupByInc\API\Model\Record>")
      */
-    private $records = array();
+    public $records = array();
 
     /**
      * @return Record[] If this zone is a record zone, a list of records returned from the bridge.

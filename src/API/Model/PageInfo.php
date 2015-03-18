@@ -10,12 +10,12 @@ class PageInfo
      * @var int
      * @JMS\Type("integer")
      */
-    private $recordStart;
+    public $recordStart;
     /**
      * @var int
      * @JMS\Type("integer")
      */
-    private $recordEnd;
+    public $recordEnd;
 
     /**
      * @return int The record offset for this search and navigation state.

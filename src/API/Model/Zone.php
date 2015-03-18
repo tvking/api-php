@@ -27,13 +27,14 @@ abstract class Zone
     /**
      * @var string
      * @JMS\Type("string")
+     * @JMS\SerializedName("_id")
      */
-    private $id;
+    public $id;
     /**
      * @var string
      * @JMS\Type("string")
      */
-    private $name;
+    public $name;
 
     /**
      * @return string ID is a MD5 hash of the name.

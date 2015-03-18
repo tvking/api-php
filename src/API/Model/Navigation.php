@@ -30,48 +30,49 @@ class Navigation
     /**
      * @var string
      * @JMS\Type("string")
+     * @JMS\SerializedName("_id")
      */
-    private $id;
+    public $id;
     /**
      * @var string
      * @JMS\Type("string")
      */
-    private $name;
+    public $name;
     /**
      * @var string
      * @JMS\Type("string")
      */
-    private $type;
+    public $type;
     /**
      * @var string
      * @JMS\Type("string")
      */
-    private $sort;
+    public $sort;
     /**
      * @var string
      * @JMS\Type("string")
      */
-    private $displayName;
+    public $displayName;
     /**
      * @var bool
      * @JMS\Type("boolean")
      */
-    private $range = false;
+    public $range = false;
     /**
      * @var bool
      * @JMS\Type("boolean")
      */
-    private $or = false;
+    public $or = false;
     /**
      * @var Refinement[]
      * @JMS\Type("array<GroupByInc\API\Model\Refinement>")
      */
-    private $refinements = array();
+    public $refinements = array();
     /**
      * @var Metadata[]
      * @JMS\Type("array<GroupByInc\API\Model\Metadata>")
      */
-    private $metadata = array();
+    public $metadata = array();
 
     /**
      * @return string The name of the dynamic navigation attribute.

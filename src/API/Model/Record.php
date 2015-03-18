@@ -9,28 +9,32 @@ class Record
     /**
      * @var string
      * @JMS\Type("string")
+     * @JMS\SerializedName("_id")
      */
-    private $id;
+    public $id;
     /**
      * @var string
      * @JMS\Type("string")
+     * @JMS\SerializedName("_u")
      */
-    private $url;
+    public $url;
     /**
      * @var string
      * @JMS\Type("string")
+     * @JMS\SerializedName("_snippet")
      */
-    private $snippet;
+    public $snippet;
     /**
      * @var string
      * @JMS\Type("string")
+     * @JMS\SerializedName("_t")
      */
-    private $title;
+    public $title;
     /**
      * @var object[]
      * @JMS\Type("array")
      */
-    private $allMeta = array();
+    public $allMeta = array();
 
     /**
      * @return string The ID is generated from URL of this record which means it will persist across updates.

@@ -22,17 +22,14 @@ abstract class SelectedRefinement
 {
     /**
      * @var string
-     * @JMS\Type("string")
      */
     private $id;
     /**
      * @var string
-     * @JMS\Type("string")
      */
     private $navigationName;
     /**
      * @var bool
-     * @JMS\Type("boolean")
      */
     private $exclude = false;
 

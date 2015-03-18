@@ -22,14 +22,14 @@ use JMS\Serializer\Serializer;
 
 class JsonDeserializeTest extends PHPUnit_Framework_TestCase
 {
-    public static $JSON_RICH_CONTENT_ZONE = '{"content":"crestfallen","id":"f90j1e1rf","name":"appalled","type":"Rich_Content"}';
-    public static $JSON_CONTENT_ZONE = '{"content":"mushy","id":"23425n89hr","name":"porcelain","type":"Content"}';
-    public static $JSON_BANNER_ZONE = '{"content":"man","id":"asf0j2380jf","name":"vitruvian","type":"Banner"}';
+    public static $JSON_RICH_CONTENT_ZONE = '{"content":"crestfallen","_id":"f90j1e1rf","name":"appalled","type":"Rich_Content"}';
+    public static $JSON_CONTENT_ZONE = '{"content":"mushy","_id":"23425n89hr","name":"porcelain","type":"Content"}';
+    public static $JSON_BANNER_ZONE = '{"content":"man","_id":"asf0j2380jf","name":"vitruvian","type":"Banner"}';
     public static $JSON_CLUSTER_RECORD = '{"title":"fubar","url":"example.com","snippet":"itty bit"}';
-    public static $JSON_RECORD = '{"id":"fw90314jh289t","url":"exemplar.com","snippet":"Curator","title":"Periwinkle","allMeta":{"look":"at","all":"my","keys":["we","are","the","values"]}}';
+    public static $JSON_RECORD = '{"_id":"fw90314jh289t","_u":"exemplar.com","_snippet":"Curator","_t":"Periwinkle","allMeta":{"look":"at","all":"my","keys":["we","are","the","values"]}}';
     public static $JSON_METADATA = '{"key":"orange","value":"apple"}';
-    public static $JSON_REFINEMENT_VALUE = '{"id":"fadfs89y10j","count":987,"type":"Value","value":"malaise","exclude":false}';
-    public static $JSON_REFINEMENT_RANGE = '{"high":"delicious","low":"atrocious","id":"342h9582hh4","count":14,"type":"Range","exclude":true}';
+    public static $JSON_REFINEMENT_VALUE = '{"_id":"fadfs89y10j","count":987,"type":"Value","value":"malaise","exclude":false}';
+    public static $JSON_REFINEMENT_RANGE = '{"high":"delicious","low":"atrocious","_id":"342h9582hh4","count":14,"type":"Range","exclude":true}';
     public static $JSON_PAGE_INFO = '{"recordStart":20,"recordEnd":50}';
     public static $JSON_RECORDS_ZONE;
     public static $JSON_TEMPLATE;
@@ -46,16 +46,14 @@ class JsonDeserializeTest extends PHPUnit_Framework_TestCase
     public static function init()
     {
         self::$JSON_RECORDS_ZONE = '{"records":[' . self::$JSON_RECORD .
-            '],"id":"1240jfw9s8","name":"gorbachev","type":"Record"}';
+            '],"_id":"1240jfw9s8","name":"gorbachev","type":"Record"}';
 
-        self::$JSON_TEMPLATE = '{"id":"fad87g114","name":"bulbous","ruleName":"carmageddon",' .
-            '"zones":[' . self::$JSON_CONTENT_ZONE . ',' . self::$JSON_RECORDS_ZONE . '],' .
-            '"zonesByName":{"porcelain":' . self::$JSON_CONTENT_ZONE . ',"gorbachev":' .
-            self::$JSON_RECORDS_ZONE . '}}';
+        self::$JSON_TEMPLATE = '{"_id":"fad87g114","name":"bulbous","ruleName":"carmageddon",' .
+            '"zones":[' . self::$JSON_CONTENT_ZONE . ',' . self::$JSON_RECORDS_ZONE . ']}';
 
         self::$JSON_CLUSTER = '{"term":"some","records":[' . self::$JSON_CLUSTER_RECORD . ']}';
 
-        self::$JSON_NAVIGATION = '{"id":"081h29n81f","name":"green","displayName":"GReeN",' .
+        self::$JSON_NAVIGATION = '{"_id":"081h29n81f","name":"green","displayName":"GReeN",' .
             '"range":true,"or":false,"type":"Range_Date","sort":"Value_Ascending","refinements":[' .
             self::$JSON_REFINEMENT_RANGE . ',' . self::$JSON_REFINEMENT_VALUE .
             '],"metadata":[' . self::$JSON_METADATA . ']}';

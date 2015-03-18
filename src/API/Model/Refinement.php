@@ -23,18 +23,19 @@ abstract class Refinement
     /**
      * @var string
      * @JMS\Type("string")
+     * @JMS\SerializedName("_id")
      */
-    private $id;
+    public $id;
     /**
      * @var int
      * @JMS\Type("integer")
      */
-    private $count;
+    public $count;
     /**
      * @var bool
      * @JMS\Type("boolean")
      */
-    private $exclude;
+    public $exclude;
 
     /**
      * @return string The ID is a MD5 of the name and value of the refinement.

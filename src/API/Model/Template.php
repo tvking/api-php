@@ -9,28 +9,24 @@ class Template
     /**
      * @var string
      * @JMS\Type("string")
+     * @JMS\SerializedName("_id")
      */
-    private $id;
+    public $id;
     /**
      * @var string
      * @JMS\Type("string")
      */
-    private $name;
+    public $name;
     /**
      * @var string
      * @JMS\Type("string")
      */
-    private $ruleName;
+    public $ruleName;
     /**
      * @var Zone[]
      * @JMS\Type("array<GroupByInc\API\Model\Zone>")
      */
-    private $zones = array();
-    /**
-     * @var Zone[]
-     * @JMS\Type("array<string, GroupByInc\API\Model\Zone>")
-     */
-    private $zonesByName = array();
+    public $zones = array();
 
     /**
      * @return string An MD5 hash of the name of this template.
@@ -101,19 +97,7 @@ class Template
     public function setZones($zones)
     {
         $this->zones = $zones;
-        $this->zonesByName = array();
-        foreach ($zones as $zone) {
-            $this->zonesByName[$zone->getName()] = $zone;
-        }
         return $this;
-    }
-
-    /**
-     * @return Zone[] A map of zones keyed by name for easy lookup in the UI layer.
-     */
-    public function getZonesByName()
-    {
-        return $this->zonesByName;
     }
 
 }

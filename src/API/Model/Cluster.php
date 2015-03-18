@@ -10,12 +10,12 @@ class Cluster
      * @var string
      * @JMS\Type("string")
      */
-    private $term;
+    public $term;
     /**
      * @var ClusterRecord[]
      * @JMS\Type("array<GroupByInc\API\Model\ClusterRecord>")
      */
-    private $records = array();
+    public $records = array();
 
     /**
      * @return string The term for this cluster.

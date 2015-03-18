@@ -10,17 +10,17 @@ class ClusterRecord
      * @var string
      * @JMS\Type("string")
      */
-    private $title;
+    public $title;
     /**
      * @var string
      * @JMS\Type("string")
      */
-    private $url;
+    public $url;
     /**
      * @var string
      * @JMS\Type("string")
      */
-    private $snippet;
+    public $snippet;
 
     /**
      * @return string The title of this record.

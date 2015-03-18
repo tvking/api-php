@@ -10,12 +10,12 @@ class Metadata
      * @var string
      * @JMS\Type("string")
      */
-    private $key;
+    public $key;
     /**
      * @var string
      * @JMS\Type("string")
      */
-    private $value;
+    public $value;
 
     /**
      * @return string The name of this metadata.
