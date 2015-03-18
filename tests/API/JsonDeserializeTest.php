@@ -171,8 +171,7 @@ class JsonDeserializeTest extends PHPUnit_Framework_TestCase
         $expectedResults->setQuery("skwuare");
         $expectedResults->setRecords(array(JsonSerializeTest::$OBJ_RECORD));
         $expectedResults->setRedirect("/to/the/moon.html");
-        $expectedResults->setSelectedRefinements(array(JsonSerializeTest::$OBJ_REFINEMENT_RANGE,
-            JsonSerializeTest::$OBJ_REFINEMENT_VALUE));
+        $expectedResults->setSelectedNavigation(array(JsonSerializeTest::$OBJ_NAVIGATION));
         $expectedResults->setTemplate(JsonSerializeTest::$OBJ_TEMPLATE);
         $expectedResults->setSiteParams(array(JsonSerializeTest::$OBJ_METADATA));
         $expectedResults->setRelatedQueries(array("squawk", "ask"));
@@ -180,7 +179,7 @@ class JsonDeserializeTest extends PHPUnit_Framework_TestCase
         $expectedResults->setTotalRecordCount(34);
 
         $json = '{"availableNavigation":[' . self::$JSON_NAVIGATION . '],' .
-            '"selectedRefinements":[' . self::$JSON_REFINEMENT_RANGE . ',' . self::$JSON_REFINEMENT_VALUE . '],' .
+            '"selectedNavigation":[' . self::$JSON_NAVIGATION . '],' .
             '"clusters":[' . self::$JSON_CLUSTER . '],"records":[' . self::$JSON_RECORD . '],' .
             '"didYouMean":["square","skewer"],"relatedQueries":["squawk","ask"],' .
             '"siteParams":[' . self::$JSON_METADATA . '],"rewrites":["Synonym","Antonym","Homonym"],' .

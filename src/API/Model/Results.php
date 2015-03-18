@@ -7,55 +7,20 @@ use JMS\Serializer\Annotation as JMS;
 class Results
 {
     /**
-     * @var Navigation[]
-     * @JMS\Type("array<GroupByInc\API\Model\Navigation>")
+     * @var int
+     * @JMS\Type("integer")
      */
-    private $availableNavigation = array();
+    private $totalRecordCount;
     /**
-     * @var SelectedRefinement[]
-     * @JMS\Type("array<GroupByInc\API\Model\Refinement>")
+     * @var string
+     * @JMS\Type("string")
      */
-    private $selectedRefinements = array();
+    private $area;
     /**
-     * @var Cluster[]
-     * @JMS\Type("array<GroupByInc\API\Model\Cluster>")
+     * @var string
+     * @JMS\Type("string")
      */
-    private $clusters = array();
-    /**
-     * @var Record[]
-     * @JMS\Type("array<GroupByInc\API\Model\Record>")
-     */
-    private $records = array();
-    /**
-     * @var string[]
-     * @JMS\Type("array<string>")
-     */
-    private $didYouMean = array();
-    /**
-     * @var string[]
-     * @JMS\Type("array<string>")
-     */
-    private $relatedQueries = array();
-    /**
-     * @var Metadata[]
-     * @JMS\Type("array<GroupByInc\API\Model\Metadata>")
-     */
-    private $siteParams = array();
-    /**
-     * @var string[]
-     * @JMS\Type("array<string>")
-     */
-    private $rewrites = array();
-    /**
-     * @var PageInfo
-     * @JMS\Type("GroupByInc\API\Model\PageInfo")
-     */
-    private $pageInfo;
-    /**
-     * @var Template
-     * @JMS\Type("GroupByInc\API\Model\Template")
-     */
-    private $template;
+    private $biasingProfile;
     /**
      * @var string
      * @JMS\Type("string")
@@ -75,12 +40,64 @@ class Results
      * @var string
      * @JMS\Type("string")
      */
-    private $area;
+    private $originalQuery;
     /**
-     * @var int
-     * @JMS\Type("integer")
+     * @var string
+     * @JMS\Type("string")
      */
-    private $totalRecordCount;
+    private $correctedQuery;
+
+    /**
+     * @var Template
+     * @JMS\Type("GroupByInc\API\Model\Template")
+     */
+    private $template;
+    /**
+     * @var PageInfo
+     * @JMS\Type("GroupByInc\API\Model\PageInfo")
+     */
+    private $pageInfo;
+    /**
+     * @var Navigation[]
+     * @JMS\Type("array<GroupByInc\API\Model\Navigation>")
+     */
+    private $availableNavigation = array();
+    /**
+     * @var Navigation[]
+     * @JMS\Type("array<GroupByInc\API\Model\Navigation>")
+     */
+    private $selectedNavigation = array();
+
+    /**
+     * @var Record[]
+     * @JMS\Type("array<GroupByInc\API\Model\Record>")
+     */
+    private $records = array();
+    /**
+     * @var string[]
+     * @JMS\Type("array<string>")
+     */
+    private $didYouMean = array();
+    /**
+     * @var string[]
+     * @JMS\Type("array<string>")
+     */
+    private $relatedQueries = array();
+    /**
+     * @var string[]
+     * @JMS\Type("array<string>")
+     */
+    private $rewrites = array();
+    /**
+     * @var Metadata[]
+     * @JMS\Type("array<GroupByInc\API\Model\Metadata>")
+     */
+    private $siteParams = array();
+    /**
+     * @var Cluster[]
+     * @JMS\Type("array<GroupByInc\API\Model\Cluster>")
+     */
+    private $clusters = array();
 
     /**
      * @return string[] A list of spell corrections based on the search term.
@@ -179,19 +196,19 @@ class Results
     }
 
     /**
-     * @return SelectedRefinement[] A list of the currently selected refinements. Also known as breadcrumbs.
+     * @return Navigation[] A list of the currently selected navigations. Also known as breadcrumbs.
      */
-    public function getSelectedRefinements()
+    public function getSelectedNavigation()
     {
-        return $this->selectedRefinements;
+        return $this->selectedNavigation;
     }
 
     /**
-     * @param SelectedRefinement[] $selectedRefinements Set the selected refinements.
+     * @param Navigation[] $selectedNavigation Set the selected navigations.
      */
-    public function setSelectedRefinements($selectedRefinements)
+    public function setSelectedNavigation($selectedNavigation)
     {
-        $this->selectedRefinements = $selectedRefinements;
+        $this->selectedNavigation = $selectedNavigation;
     }
 
     /**
@@ -291,6 +308,38 @@ class Results
     }
 
     /**
+     * @return string The original query sent to the search service.
+     */
+    public function getOriginalQuery()
+    {
+        return $this->originalQuery;
+    }
+
+    /**
+     * @param string $originalQuery Sets the original query sent to the search service.
+     */
+    public function setOriginalQuery($originalQuery)
+    {
+        $this->originalQuery = $originalQuery;
+    }
+
+    /**
+     * @return string The corrected query sent to the engine, if auto-correction is enabled.
+     */
+    public function getCorrectedQuery()
+    {
+        return $this->correctedQuery;
+    }
+
+    /**
+     * @param string $correctedQuery Sets the corrected query sent to the engine, if auto-correction is enabled.
+     */
+    public function setCorrectedQuery($correctedQuery)
+    {
+        $this->correctedQuery = $correctedQuery;
+    }
+
+    /**
      * @return string[] A list of rewrites (spellings, synonyms, etc...) that occurred.
      */
     public function getRewrites()
@@ -320,6 +369,22 @@ class Results
     public function setArea($area)
     {
         $this->area = $area;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBiasingProfile()
+    {
+        return $this->biasingProfile;
+    }
+
+    /**
+     * @param string $biasingProfile
+     */
+    public function setBiasingProfile($biasingProfile)
+    {
+        $this->biasingProfile = $biasingProfile;
     }
 }
 
