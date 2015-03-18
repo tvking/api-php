@@ -10,94 +10,94 @@ class Results
      * @var int
      * @JMS\Type("integer")
      */
-    private $totalRecordCount;
+    public $totalRecordCount;
     /**
      * @var string
      * @JMS\Type("string")
      */
-    private $area;
+    public $area;
     /**
      * @var string
      * @JMS\Type("string")
      */
-    private $biasingProfile;
+    public $biasingProfile;
     /**
      * @var string
      * @JMS\Type("string")
      */
-    private $redirect;
+    public $redirect;
     /**
      * @var string
      * @JMS\Type("string")
      */
-    private $errors;
+    public $errors;
     /**
      * @var string
      * @JMS\Type("string")
      */
-    private $query;
+    public $query;
     /**
      * @var string
      * @JMS\Type("string")
      */
-    private $originalQuery;
+    public $originalQuery;
     /**
      * @var string
      * @JMS\Type("string")
      */
-    private $correctedQuery;
+    public $correctedQuery;
 
     /**
      * @var Template
      * @JMS\Type("GroupByInc\API\Model\Template")
      */
-    private $template;
+    public $template;
     /**
      * @var PageInfo
      * @JMS\Type("GroupByInc\API\Model\PageInfo")
      */
-    private $pageInfo;
+    public $pageInfo;
     /**
      * @var Navigation[]
      * @JMS\Type("array<GroupByInc\API\Model\Navigation>")
      */
-    private $availableNavigation = array();
+    public $availableNavigation = array();
     /**
      * @var Navigation[]
      * @JMS\Type("array<GroupByInc\API\Model\Navigation>")
      */
-    private $selectedNavigation = array();
+    public $selectedNavigation = array();
 
     /**
      * @var Record[]
      * @JMS\Type("array<GroupByInc\API\Model\Record>")
      */
-    private $records = array();
+    public $records = array();
     /**
      * @var string[]
      * @JMS\Type("array<string>")
      */
-    private $didYouMean = array();
+    public $didYouMean = array();
     /**
      * @var string[]
      * @JMS\Type("array<string>")
      */
-    private $relatedQueries = array();
+    public $relatedQueries = array();
     /**
      * @var string[]
      * @JMS\Type("array<string>")
      */
-    private $rewrites = array();
+    public $rewrites = array();
     /**
      * @var Metadata[]
      * @JMS\Type("array<GroupByInc\API\Model\Metadata>")
      */
-    private $siteParams = array();
+    public $siteParams = array();
     /**
      * @var Cluster[]
      * @JMS\Type("array<GroupByInc\API\Model\Cluster>")
      */
-    private $clusters = array();
+    public $clusters = array();
 
     /**
      * @return string[] A list of spell corrections based on the search term.
