@@ -13,7 +13,8 @@ class BridgeTest extends PHPUnit_Framework_TestCase
     const PORT = 8080;
     const URL = 'http://localhost:8080/search';
     const HEADERS = "Status 200\r\nContent-Type:application/json\n";
-    const TEST_QUERY = '{"client_key":"randomkey","skip":0,"page_size":10,"prune_refinements":true,"fields":[],"or_fields":[],"navigations":[],"custom_url_params":[]}';
+    const TEST_QUERY = '{"clientKey":"randomkey","skip":0,"pageSize":10,"pruneRefinements":true,"fields":[],"orFields":[],"navigations":[],"customUrlParams":[]}';
+    const TEST_RESPONSE = '{"query":"foobar","pageInfo":{"recordStart":14,"recordEnd":23}}';
 
     public function testErroneousStatusCode()
     {

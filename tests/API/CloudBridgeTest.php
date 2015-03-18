@@ -10,14 +10,15 @@ class CloudBridgeTest extends PHPUnit_Framework_TestCase
 {
     const CLIENT_KEY = 'randomkey';
     const DOMAIN = 'testdomain';
-    const URL = '.groupbycloud.com:443/api/v1/search';
+    const URL = 'https://testdomain.groupbycloud.com:443/api/v1/search';
     const HEADERS = "Status 200\r\nContent-Type:application/json\n";
-    const TEST_QUERY = '{"client_key":"randomkey","skip":0,"page_size":10,"prune_refinements":true,"fields":[],"or_fields":[],"navigations":[],"custom_url_params":[]}';
+    const TEST_QUERY = '{"clientKey":"randomkey","skip":0,"pageSize":10,"pruneRefinements":true,"fields":[],"orFields":[],"navigations":[],"customUrlParams":[]}';
+    const TEST_RESPONSE = '{"query":"foobar","pageInfo":{"recordStart":14,"recordEnd":23}}';
 
     public function testErroneousStatusCode()
     {
         $bridge = Phake::partialMock('GroupByInc\API\CloudBridge', self::CLIENT_KEY, self::DOMAIN);
-        Phake::when($bridge)->execute('https://' . self::DOMAIN . self::URL, self::TEST_QUERY)
+        Phake::when($bridge)->execute(self::URL, self::TEST_QUERY)
             ->thenReturn(new Response('{"foo":"bar"}', 'Status 400', Request::post('')));
 
         $query = new Query();
@@ -36,7 +37,7 @@ class CloudBridgeTest extends PHPUnit_Framework_TestCase
     public function testErrorOnReturnBinary()
     {
         $bridge = Phake::partialMock('GroupByInc\API\CloudBridge', self::CLIENT_KEY, self::DOMAIN);
-        Phake::when($bridge)->execute('https://' . self::DOMAIN . self::URL, self::TEST_QUERY)
+        Phake::when($bridge)->execute(self::URL, self::TEST_QUERY)
             ->thenReturn(new Response('{"foo":"bar"}', "Status 200\r\nContent-Type:application/bson\n", Request::post('')));
 
         $query = new Query();
@@ -52,8 +53,8 @@ class CloudBridgeTest extends PHPUnit_Framework_TestCase
     public function testSearchUncompressedResponse()
     {
         $bridge = Phake::partialMock('GroupByInc\API\CloudBridge', self::CLIENT_KEY, self::DOMAIN);
-        Phake::when($bridge)->execute('https://' . self::DOMAIN . self::URL, self::TEST_QUERY)
-            ->thenReturn(new Response('{"query":"foobar"}', self::HEADERS, Request::post('')));
+        Phake::when($bridge)->execute(self::URL, self::TEST_QUERY)
+            ->thenReturn(new Response(self::TEST_RESPONSE, self::HEADERS, Request::post('')));
 
         $query = new Query();
         /** @var CloudBridge $bridge */
@@ -65,8 +66,8 @@ class CloudBridgeTest extends PHPUnit_Framework_TestCase
     public function testSearchCompressedResponse()
     {
         $bridge = Phake::partialMock('GroupByInc\API\CloudBridge', self::CLIENT_KEY, self::DOMAIN);
-        Phake::when($bridge)->execute('https://' . self::DOMAIN . self::URL, self::TEST_QUERY)
-            ->thenReturn(new Response('{"query":"foobar"}', self::HEADERS . "Content-Encoding:gzip\n", Request::post('')));
+        Phake::when($bridge)->execute(self::URL, self::TEST_QUERY)
+            ->thenReturn(new Response(self::TEST_RESPONSE, self::HEADERS . "Content-Encoding:gzip\n", Request::post('')));
 
         $query = new Query();
         /** @var CloudBridge $bridge */

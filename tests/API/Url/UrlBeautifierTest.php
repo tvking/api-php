@@ -334,7 +334,6 @@ class UrlBeautifierTest extends PHPUnit_Framework_TestCase
             $expectedRefinements = array_slice(func_get_args(), 2);
             /** @var Navigation[] $navigations */
             $navigations = array_values($query->getNavigations());
-            var_dump($navigations);
             for ($i = 0; $i < count($expectedRefinements); $i++) {
                 /** @var RefinementValue $valueRefinement */
                 $valueRefinement = $navigations[$i]->getRefinements()[0];

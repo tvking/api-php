@@ -9,10 +9,10 @@ use GroupByInc\API\Model\RefinementValue;
 use GroupByInc\API\Request\CustomUrlParam;
 use GroupByInc\API\Request\Request;
 use GroupByInc\API\Request\Sort;
+use GroupByInc\API\Util\SerializerFactory;
 use GroupByInc\API\Util\StringBuilder;
 use GroupByInc\API\Util\StringUtils;
 use JMS\Serializer\Serializer;
-use JMS\Serializer\SerializerBuilder;
 use RuntimeException;
 
 class Symbol
@@ -68,7 +68,7 @@ class Query
 
     public function __construct()
     {
-        $this->serializer = SerializerBuilder::create()->build();
+        $this->serializer = SerializerFactory::build();
     }
 
     /**
@@ -282,7 +282,7 @@ class Query
         try {
             $jsonRequest = $this->serializer->serialize($data, 'json');
         } catch (RuntimeException $e) {
-            // probably should do something here
+            throw new RuntimeException('Unable to serialize request ' . var_dump($data));
         }
 
         return $jsonRequest;

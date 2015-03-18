@@ -2,11 +2,11 @@
 
 namespace GroupByInc\API;
 
+use GroupByInc\API\Util\SerializerFactory;
 use Httpful\Mime;
 use Httpful\Request;
 use Httpful\Response;
 use JMS\Serializer\Serializer;
-use JMS\Serializer\SerializerBuilder;
 use RuntimeException;
 
 abstract class AbstractBridge
@@ -36,7 +36,7 @@ abstract class AbstractBridge
         $this->bridgeUrl = $baseUrl . self::SEARCH;
         $this->bridgeUrlCluster = $baseUrl . self::CLUSTER;
 
-        $this->serializer = SerializerBuilder::create()->build();
+        $this->serializer = SerializerFactory::build();
     }
 
     /**
