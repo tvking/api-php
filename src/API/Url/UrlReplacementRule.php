@@ -3,7 +3,7 @@
 namespace GroupByInc\API\Url;
 
 use GroupByInc\API\Util\StringBuilder;
-use GroupByInc\API\Model\Refinement;
+use GroupByInc\API\Model\SelectedRefinement;
 
 class UrlReplacementRule
 {

@@ -3,7 +3,7 @@
 namespace GroupByInc\API\Url;
 
 use GroupByInc\API\Model\Navigation;
-use GroupByInc\API\Model\Refinement;
+use GroupByInc\API\Model\SelectedRefinement;
 use GroupByInc\API\Query;
 use GroupByInc\API\Util\ArrayUtils;
 use RuntimeException;
@@ -17,11 +17,11 @@ class UrlFunctions
      * @param Navigation[] $navigations    List of currently selected navigations. It will be updated to include the
      *                                     specified refinement
      * @param string       $navigationName Name of the navigation to add the refinement to.
-     * @param Refinement   $refinement     Refinement to add.
+     * @param SelectedRefinement   $refinement     Refinement to add.
      * @return string
      * @throws RuntimeException
      */
-    public static function toUrlAdd($identifier, $searchString, array &$navigations, $navigationName, Refinement $refinement)
+    public static function toUrlAdd($identifier, $searchString, array &$navigations, $navigationName, SelectedRefinement $refinement)
     {
         $beautifier = self::getBeautifier($identifier);
         $query = self::addRefinements($navigations, $navigationName, $refinement);
@@ -35,11 +35,11 @@ class UrlFunctions
      * @param Navigation[] $navigations    List of currently selected navigations. It will be updated to no longer
      *                                     include the specified refinement.
      * @param string       $navigationName Name of the navigation to remove the refinement from.
-     * @param Refinement   $refinement     Refinement to remove.
+     * @param SelectedRefinement   $refinement     Refinement to remove.
      * @return string Updated URL.
      * @throws RuntimeException
      */
-    public static function toUrlRemove($identifier, $searchString, array &$navigations, $navigationName, Refinement $refinement)
+    public static function toUrlRemove($identifier, $searchString, array &$navigations, $navigationName, SelectedRefinement $refinement)
     {
         $beautifier = self::getBeautifier($identifier);
         $query = self::removeRefinements($navigations, $navigationName, $refinement);
@@ -50,11 +50,11 @@ class UrlFunctions
     /**
      * @param Navigation[] $navigations
      * @param string       $navigationName
-     * @param Refinement   $refinement
+     * @param SelectedRefinement   $refinement
      * @return Query
      * @throws RuntimeException
      */
-    private static function removeRefinements(array $navigations, $navigationName, Refinement $refinement)
+    private static function removeRefinements(array $navigations, $navigationName, SelectedRefinement $refinement)
     {
         $query = new Query();
         $newNavigations = &$query->getNavigations();
@@ -91,10 +91,10 @@ class UrlFunctions
     /**
      * @param Navigation[] $navigations
      * @param string       $navigationName
-     * @param Refinement   $refinement
+     * @param SelectedRefinement   $refinement
      * @return Query
      */
-    private static function addRefinements(array $navigations, $navigationName, Refinement $refinement)
+    private static function addRefinements(array $navigations, $navigationName, SelectedRefinement $refinement)
     {
         $query = new Query();
         $newNavigations = &$query->getNavigations();

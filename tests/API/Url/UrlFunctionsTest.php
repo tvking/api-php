@@ -1,7 +1,7 @@
 <?php
 use GroupByInc\API\Model\Navigation;
-use GroupByInc\API\Model\RefinementRange;
-use GroupByInc\API\Model\RefinementValue;
+use GroupByInc\API\Model\SelectedRefinementRange;
+use GroupByInc\API\Model\SelectedRefinementValue;
 use GroupByInc\API\Url\UrlBeautifier;
 use GroupByInc\API\Url\UrlFunctions;
 
@@ -28,13 +28,13 @@ class UrlFunctionsTest extends PHPUnit_Framework_TestCase
     public function testAddToUrl()
     {
         $navigations = [];
-        $refinement = new RefinementValue();
+        $refinement = new SelectedRefinementValue();
         $refinement->setValue('3.2m');
         $url = UrlFunctions::toUrlAdd(self::DEFAULT_BEAUTIFIER, 'toast', $navigations, self::HEIGHT_NAVIGATION, $refinement);
         $this->assertEquals('/3.2m/toast/hq', $url);
         $this->assertEquals(1, count($navigations));
 
-        $refinement = new RefinementValue();
+        $refinement = new SelectedRefinementValue();
         $refinement->setValue('toys');
         $url = UrlFunctions::toUrlAdd(self::DEFAULT_BEAUTIFIER, 'toast', $navigations, self::CATEGORY_NAVIGATION, $refinement);
         $this->assertEquals('/3.2m/toys/toast/hcq', $url);
@@ -44,7 +44,7 @@ class UrlFunctionsTest extends PHPUnit_Framework_TestCase
     public function testAddRangeToUrl()
     {
         $navigations = [];
-        $refinement = new RefinementRange();
+        $refinement = new SelectedRefinementRange();
         $refinement->setLow('12')
             ->setHigh('34');
         $url = UrlFunctions::toUrlAdd(self::DEFAULT_BEAUTIFIER, 'toast', $navigations, self::CATEGORY_NAVIGATION, $refinement);
@@ -53,9 +53,9 @@ class UrlFunctionsTest extends PHPUnit_Framework_TestCase
     public function testRemoveFromUrl()
     {
         $navigations = [];
-        $refinement1 = new RefinementValue();
+        $refinement1 = new SelectedRefinementValue();
         $refinement1->setValue('3.2m');
-        $refinement2 = new RefinementValue();
+        $refinement2 = new SelectedRefinementValue();
         $refinement2->setValue('toys');
         UrlFunctions::toUrlAdd(self::DEFAULT_BEAUTIFIER, 'toast', $navigations, self::HEIGHT_NAVIGATION, $refinement1);
         UrlFunctions::toUrlAdd(self::DEFAULT_BEAUTIFIER, 'toast', $navigations, self::CATEGORY_NAVIGATION, $refinement2);

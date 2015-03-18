@@ -4,8 +4,12 @@ namespace GroupByInc\API;
 
 use GroupByInc\API\Model\Navigation;
 use GroupByInc\API\Model\Refinement;
+use GroupByInc\API\Model\Refinement\Type;
 use GroupByInc\API\Model\RefinementRange;
 use GroupByInc\API\Model\RefinementValue;
+use GroupByInc\API\Model\SelectedRefinement;
+use GroupByInc\API\Model\SelectedRefinementRange;
+use GroupByInc\API\Model\SelectedRefinementValue;
 use GroupByInc\API\Request\CustomUrlParam;
 use GroupByInc\API\Request\Request;
 use GroupByInc\API\Request\Sort;
@@ -31,8 +35,6 @@ class Query
     /** @var string */
     private $query;
     /** @var int */
-    private $sort;
-    /** @var int */
     private $skip = 0;
     /** @var int */
     private $pageSize = 10;
@@ -44,14 +46,8 @@ class Query
     private $biasingProfile;
     /** @var string */
     private $language;
-    // Removed until CBOR support for serialization / deserialization improves
-//    /** @var bool */
-//    private $returnBinary = false;
-    /** @var bool */
-    private $pruneRefinements = true;
-    /** @var bool */
-    private $disableAutocorrection = false;
-
+    /** @var Sort */
+    private $sort;
     /** @var CustomUrlParam[] */
     private $customUrlParams = array();
     /** @var Navigation[] */
@@ -60,15 +56,184 @@ class Query
     private $fields = array();
     /** @var string[] */
     private $orFields = array();
+    /** @var bool */
+    private $pruneRefinements = true;
+    /** @var bool */
+    private $disableAutocorrection = false;
+    /** @var bool */
+    private $wildcardSearchEnabled = false;
+    // Removed until CBOR support for serialization / de-serialization improves
+//    /** @var bool */
+//    private $returnBinary = false;
+
     /** @var Serializer */
     private $serializer;
 
-    /** @var bool */
-    private $compressResponse = false;
+    /**
+     * @param Request $request
+     * @return string
+     */
+    private function requestToJson($request)
+    {
+        $jsonRequest = null;
+        try {
+            $jsonRequest = $this->serializer->serialize($request, 'json');
+        } catch (RuntimeException $e) {
+            throw new RuntimeException('Unable to serialize request ' . var_dump($request));
+        }
+
+        return $jsonRequest;
+    }
+
+    /**
+     * @param string $clientKey Your client key.
+     * @return string JSON representation of request to Bridge.
+     */
+    public function getBridgeJson($clientKey)
+    {
+        $data = new Request();
+        $data->clientKey = $clientKey;
+        $data->area = $this->area;
+        $data->collection = $this->collection;
+        $data->query = $this->query;
+        $data->sort = $this->sort;
+        $data->fields = $this->fields;
+        $data->orFields = $this->orFields;
+        $data->language = $this->language;
+        $data->biasingProfile = $this->biasingProfile;
+        $data->pageSize = $this->pageSize;
+        $data->skip = $this->skip;
+        $data->customUrlParams = $this->customUrlParams;
+
+        /** @var SelectedRefinement[] $refinements */
+        $refinements = [];
+        foreach ($this->navigations as $key => $navigation) {
+            foreach ($navigation->getRefinements() as $refinement) {
+                switch ($refinement->getType()) {
+                    case Type::Range: {
+                        /** @var RefinementRange $rr */
+                        $rr = $refinement;
+                        $selectedRefinementRange = new SelectedRefinementRange();
+                        $selectedRefinementRange
+                            ->setNavigationName($navigation->getName())
+                            ->setLow($rr->getLow())
+                            ->setHigh($rr->getHigh())
+                            ->setExclude($rr->isExclude());
+
+                        array_push($refinements, $selectedRefinementRange);
+                        break;
+                    }
+                    case Type::Value: {
+                        /** @var RefinementValue $rv */
+                        $rv = $refinement;
+                        $selectedRefinementValue = new SelectedRefinementValue();
+                        $selectedRefinementValue
+                            ->setNavigationName($navigation->getName())
+                            ->setValue($rv->getValue())
+                            ->setExclude($rv->isExclude());
+
+                        array_push($refinements, $selectedRefinementValue);
+                        break;
+                    }
+                }
+            }
+        }
+        $data->refinements = $refinements;
+
+        $pruneRefinements = $this->pruneRefinements;
+        if (isset($pruneRefinements) && $pruneRefinements === false) {
+            $data->pruneRefinements = false;
+        }
+
+        $disableAutocorrection = $this->disableAutocorrection;
+        if (isset($disableAutocorrection) && $disableAutocorrection === true) {
+            $data->disableAutocorrection = true;
+        }
+
+        $wildcardSearchEnabled = $this->wildcardSearchEnabled;
+        if (isset($wildcardSearchEnabled) && $wildcardSearchEnabled === true) {
+            $data->wildcardSearchEnabled = true;
+        }
+
+//        $returnBinary = $this->returnBinary;
+//        if (isset($returnBinary) && $returnBinary === true) {
+//            $data->returnBinary = true;
+//        }
+
+        return $this->requestToJson($data);
+    }
+
+    /**
+     * @param string $clientKey Your client key.
+     * @return string JSON representation of request to Bridge.
+     */
+    public function getBridgeJsonRefinementSearch($clientKey)
+    {
+        $data = new Request();
+        $data->clientKey = $clientKey;
+        $data->collection = $this->collection;
+        $data->area = $this->area;
+        $data->refinementSearch = $this->query;
+
+        $wildcardSearchEnabled = $this->wildcardSearchEnabled;
+        if (isset($wildcardSearchEnabled) && $wildcardSearchEnabled === true) {
+            $data->wildcardSearchEnabled = true;
+        }
+
+        return $this->requestToJson($data);
+    }
 
     public function __construct()
     {
         $this->serializer = SerializerFactory::build();
+    }
+
+    /**
+     * @return string The current search string.
+     */
+    public function getQuery()
+    {
+        return $this->query;
+    }
+
+    /**
+     * @param string $query The search string.
+     */
+    public function setQuery($query)
+    {
+        $this->query = $query;
+    }
+
+    /**
+     * @return string The data sub-collection.
+     */
+    public function getCollection()
+    {
+        return $this->collection;
+    }
+
+    /**
+     * @param string $collection The string representation of a collection query.
+     */
+    public function setCollection($collection)
+    {
+        $this->collection = $collection;
+    }
+
+    /**
+     * @return string The area name.
+     */
+    public function getArea()
+    {
+        return $this->area;
+    }
+
+    /**
+     * @param string $area The area name.
+     */
+    public function setArea($area)
+    {
+        $this->area = $area;
     }
 
     /**
@@ -222,7 +387,7 @@ class Query
             $navigation = $this->navigations[$navigationName];
         } else if ($navigation == null) {
             $navigation = new Navigation();
-            $navigation->setName($navigationName)->setRange($refinement instanceof RefinementRange);
+            $navigation->setName($navigationName)->setRange($refinement instanceof SelectedRefinementRange);
             $this->navigations[$navigationName] = $navigation;
         }
         $refinements = $navigation->getRefinements();
@@ -234,58 +399,23 @@ class Query
      * @param string $navigationName The name of the refinement.
      * @param mixed $low The low value.
      * @param mixed $high The high value.
+     * @param bool $exclude True if the results should exclude this range refinement, false otherwise.
      */
-    public function addRangeRefinement($navigationName, $low, $high)
+    public function addRangeRefinement($navigationName, $low, $high, $exclude = false)
     {
         $refinement = new RefinementRange();
-        $this->addRefinement($navigationName, $refinement->setLow($low)->setHigh($high));
+        $this->addRefinement($navigationName, $refinement->setLow($low)->setHigh($high)->setExclude($exclude));
     }
 
     /**
      * @param string $navigationName The name of the refinement.
      * @param mixed $value The refinement value.
+     * @param bool $exclude True if the results should exclude this value refinement, false otherwise.
      */
-    public function addValueRefinement($navigationName, $value)
+    public function addValueRefinement($navigationName, $value, $exclude = false)
     {
         $refinement = new RefinementValue();;
-        $this->addRefinement($navigationName, $refinement->setValue($value));
-    }
-
-    /**
-     * @param string $clientKey
-     * @return string JSON representation of request to Bridge.
-     */
-    public function getBridgeJson($clientKey)
-    {
-        $data = new Request();
-        $data->clientKey = $clientKey;
-        $data->collection = $this->collection;
-        $data->area = $this->area;
-        $data->query = $this->query;
-        $data->navigations = $this->navigations;
-        $data->sort = $this->sort;
-        $data->fields = $this->fields;
-        $data->orFields = $this->orFields;
-        $data->biasingProfile = $this->biasingProfile;
-        $data->pageSize = $this->pageSize;
-//        $data->returnBinary = $this->returnBinary;
-        $data->skip = $this->skip;
-        $data->customUrlParams = $this->customUrlParams;
-        $data->language = $this->language;
-
-        $pruneRefinements = $this->pruneRefinements;
-        if (isset($pruneRefinements) && $pruneRefinements === true) {
-            $data->pruneRefinements = true;
-        }
-
-        $jsonRequest = null;
-        try {
-            $jsonRequest = $this->serializer->serialize($data, 'json');
-        } catch (RuntimeException $e) {
-            throw new RuntimeException('Unable to serialize request ' . var_dump($data));
-        }
-
-        return $jsonRequest;
+        $this->addRefinement($navigationName, $refinement->setValue($value)->setExclude($exclude));
     }
 
     /**
@@ -305,70 +435,19 @@ class Query
     }
 
     /**
-     * @return string The data sub-collection.
+     * @return Sort The current sort parameter.
      */
-    public function getCollection()
+    public function getSort()
     {
-        return $this->collection;
+        return $this->sort;
     }
 
     /**
-     * @param string $collection The string representation of a collection query.
+     * @param Sort $sort A Sort object representing the field and order.
      */
-    public function setCollection($collection)
+    public function setSort($sort)
     {
-        $this->collection = $collection;
-    }
-
-    /**
-     * @return string The area name.
-     */
-    public function getArea()
-    {
-        return $this->area;
-    }
-
-    /**
-     * @param string $area The area name.
-     */
-    public function setArea($area)
-    {
-        $this->area = $area;
-    }
-
-    /**
-     * @return string The current search string.
-     */
-    public function getQuery()
-    {
-        return $this->query;
-    }
-
-    /**
-     * @param string $query The search string.
-     */
-    public function setQuery($query)
-    {
-        $this->query = $query;
-    }
-
-    /**
-     * @return string A string representation of all of the currently set refinements.
-     */
-    public function getRefinementString()
-    {
-        if (!empty($this->navigations)) {
-            $builder = new StringBuilder();
-            foreach ($this->navigations as $n) {
-                foreach ($n->getRefinements() as $r) {
-                    $builder->append(Symbol::TILDE)->append($n->getName())->append($r->toTildeString());
-                }
-            }
-            if ($builder->length() > 0) {
-                return $builder->__toString();
-            }
-        }
-        return null;
+        $this->sort = $sort;
     }
 
     /**
@@ -436,22 +515,6 @@ class Query
     }
 
     /**
-     * @return Sort The current sort parameter.
-     */
-    public function getSort()
-    {
-        return $this->sort;
-    }
-
-    /**
-     * @param Sort $sort A Sort object representing the field and order.
-     */
-    public function setSort($sort)
-    {
-        $this->sort = $sort;
-    }
-
-    /**
      * @return string The current biasing profile name.
      */
     public function getBiasingProfile()
@@ -484,22 +547,6 @@ class Query
     }
 
     /**
-     * @return CompressResponse
-     */
-    public function getCompressResponse()
-    {
-        return $this->compressResponse;
-    }
-
-    /**
-     * @param $pCompressResponse
-     */
-    public function setCompressResponse($pCompressResponse)
-    {
-        $this->compressResponse = $pCompressResponse;
-    }
-
-    /**
      * @return boolean
      */
     public function isDisableAutocorrection()
@@ -508,11 +555,66 @@ class Query
     }
 
     /**
-     * @param boolean $disableAutocorrection
+     * @param boolean $disableAutocorrection Specifies whether the auto-correction behavior should be disabled.
+     * By default, when no results are returned for the given query (and there is a did-you-mean available),
+     * the first did-you-mean is automatically queried instead.
      */
     public function setDisableAutocorrection($disableAutocorrection)
     {
         $this->disableAutocorrection = $disableAutocorrection;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isWildcardSearchEnabled()
+    {
+        return $this->wildcardSearchEnabled;
+    }
+
+    /**
+     * @param boolean $wildcardSearchEnabled Indicate if the *(star) character in the search string should be treated
+     * as a wildcard prefix search. For example, `sta*` will match `star` and `start`.
+     */
+    public function setWildcardSearchEnabled($wildcardSearchEnabled)
+    {
+        $this->wildcardSearchEnabled = $wildcardSearchEnabled;
+    }
+
+    /**
+     * @return string A string representation of all of the currently set refinements.
+     */
+    public function getRefinementString()
+    {
+        if (!empty($this->navigations)) {
+            $builder = new StringBuilder();
+            foreach ($this->navigations as $n) {
+                foreach ($n->getRefinements() as $r) {
+                    $builder->append(Symbol::TILDE)->append($n->getName())->append($r->toTildeString());
+                }
+            }
+            if ($builder->length() > 0) {
+                return $builder->__toString();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @return string A string representation of all of the currently set custom url parameters.
+     */
+    public function getCustomUrlParamsString()
+    {
+        if (!empty($this->customUrlParams)) {
+            $builder = new StringBuilder();
+            foreach ($this->customUrlParams as $c) {
+                $builder->append(Symbol::TILDE)->append($c->getKey())->append(Symbol::EQUAL)->append($c->getValue());
+            }
+            if ($builder->length() > 0) {
+                return $builder->__toString();
+            }
+        }
+        return null;
     }
 
 }

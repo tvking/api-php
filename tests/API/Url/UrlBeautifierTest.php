@@ -1,7 +1,7 @@
 <?php
 
 use GroupByInc\API\Model\Navigation;
-use GroupByInc\API\Model\RefinementValue;
+use GroupByInc\API\Model\SelectedRefinementValue;
 use GroupByInc\API\Url\Beauty;
 use GroupByInc\API\Url\UrlBeautifier;
 
@@ -144,7 +144,7 @@ class UrlBeautifierTest extends PHPUnit_Framework_TestCase
         /** @var Navigation[] $navigations */
         $navigations = array_values($query->getNavigations());
         $this->assertEquals("test", $navigations[0]->getName());
-        /** @var RefinementValue $valueRefinement */
+        /** @var SelectedRefinementValue $valueRefinement */
         $valueRefinement = $navigations[0]->getRefinements()[0];
         $this->assertEquals("value", $valueRefinement->getValue());
     }
@@ -297,7 +297,7 @@ class UrlBeautifierTest extends PHPUnit_Framework_TestCase
             /** @var Navigation[] $navigations */
             $navigations = array_values($query->getNavigations());
             for ($i = 0; $i < count($expectedRefinements); $i++) {
-                /** @var RefinementValue $valueRefinement */
+                /** @var SelectedRefinementValue $valueRefinement */
                 $valueRefinement = $navigations[$i]->getRefinements()[0];
                 $this->assertEquals($expectedRefinements[$i], $valueRefinement->getValue());
             }
@@ -335,7 +335,7 @@ class UrlBeautifierTest extends PHPUnit_Framework_TestCase
             /** @var Navigation[] $navigations */
             $navigations = array_values($query->getNavigations());
             for ($i = 0; $i < count($expectedRefinements); $i++) {
-                /** @var RefinementValue $valueRefinement */
+                /** @var SelectedRefinementValue $valueRefinement */
                 $valueRefinement = $navigations[$i]->getRefinements()[0];
                 $this->assertEquals($expectedRefinements[$i], $valueRefinement->getValue());
             }

@@ -3,6 +3,7 @@
 namespace GroupByInc\API\Request;
 
 use GroupByInc\API\Model\Navigation;
+use GroupByInc\API\Model\SelectedRefinement;
 
 class Request
 {
@@ -12,28 +13,36 @@ class Request
     public $collection;
     /** @var string */
     public $area;
-    /** @var int */
-    public $skip;
-    /** @var int */
-    public $pageSize;
     /** @var string */
     public $biasingProfile;
     /** @var string */
     public $language;
-    /** @var bool */
-    public $pruneRefinements;
-    /** @var bool */
-    public $returnBinary;
     /** @var string */
     public $query;
+    /** @var string */
+    public $refinementSearch;
     /** @var Sort */
     public $sort;
+
     /** @var string[] */
     public $fields = array();
     /** @var string[] */
     public $orFields = array();
-    /** @var Navigation[] */
-    public $navigations = array();
+    /** @var SelectedRefinement[] */
+    public $refinements = array();
     /** @var CustomUrlParam[] */
     public $customUrlParams = array();
+
+    /** @var int */
+    public $skip;
+    /** @var int */
+    public $pageSize;
+    /** @var bool */
+    public $returnBinary;
+    /** @var bool */
+    public $disableAutocorrection;
+    /** @var bool */
+    public $pruneRefinements;
+    /** @var bool */
+    public $wildcardSearchEnabled;
 }

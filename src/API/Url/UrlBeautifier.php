@@ -3,8 +3,9 @@
 namespace GroupByInc\API\Url;
 
 use GroupByInc\API\Model\Navigation;
-use GroupByInc\API\Model\Refinement;
-use GroupByInc\API\Model\RefinementValue;
+use GroupByInc\API\Model\Refinement\Type;
+use GroupByInc\API\Model\SelectedRefinement;
+use GroupByInc\API\Model\SelectedRefinementValue;
 use GroupByInc\API\Query;
 use GroupByInc\API\Symbol;
 use GroupByInc\API\Util\ArrayUtils;
@@ -144,9 +145,9 @@ class UrlBeautifier
                 $refinements = $n->getRefinements();
                 foreach ($refinements as $r) {
                     switch ($r->getType()) {
-                        case Refinement\Type::Value:
+                        case Type::Value:
                             $pathLookup->append($this->getToken($n->getName()));
-                            /** @var RefinementValue $valueRef */
+                            /** @var SelectedRefinementValue $valueRef */
                             $valueRef = $r;
                             $valueRef->setValue($this->applyReplacementRule($n, $valueRef->getValue(), $indexOffset, $replacements));
                             $encodedRefValue = Symbol::SLASH . urlencode($valueRef->getValue());
@@ -154,7 +155,7 @@ class UrlBeautifier
                             $uri->appendToPath($encodedRefValue);
                             ArrayUtils::remove($refinements, $r);
                             break;
-                        case Refinement\Type::Range:
+                        case Type::Range:
                             error_log("You should not map ranges into URLs.");
                             continue 3;
                     }

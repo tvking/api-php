@@ -166,7 +166,7 @@ class JsonSerializeTest extends PHPUnit_Framework_TestCase
         self::$OBJ_REQUEST->sort = self::$OBJ_SORT;
         self::$OBJ_REQUEST->fields = array("pineapple", "grape", "clementine");
         self::$OBJ_REQUEST->orFields = array("pumpernickel", "rye");
-        self::$OBJ_REQUEST->navigations = array(self::$OBJ_NAVIGATION);
+        self::$OBJ_REQUEST->refinements = array(self::$OBJ_REFINEMENT_RANGE, self::$OBJ_REFINEMENT_VALUE);
         self::$OBJ_REQUEST->customUrlParams = array(self::$OBJ_CUSTOM_URL_PARAM);
     }
 
@@ -279,9 +279,9 @@ class JsonSerializeTest extends PHPUnit_Framework_TestCase
             '"area":"surface","skip":12,"pageSize":30,"biasingProfile":"ballooning","language":"en",' .
             '"pruneRefinements":true,"returnBinary":false,"query":"cantaloupe",' .
             '"sort":' . self::$JSON_SORT . ',"fields":["pineapple","grape","clementine"],' .
-            '"orFields":["pumpernickel","rye"],"navigations":[' . JsonDeserializeTest::$JSON_NAVIGATION . '],' .
-            '"customUrlParams":[' . self::$JSON_CUSTOM_URL_PARAM . ']}',
-            $this->serialize(self::$OBJ_REQUEST));
+            '"orFields":["pumpernickel","rye"],"refinements":[' . JsonDeserializeTest::$JSON_REFINEMENT_RANGE . ',' .
+            JsonDeserializeTest::$JSON_REFINEMENT_VALUE . '],' . '"customUrlParams":[' . self::$JSON_CUSTOM_URL_PARAM .
+            ']}', $this->serialize(self::$OBJ_REQUEST));
     }
 }
 

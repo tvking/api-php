@@ -12,7 +12,7 @@ class Results
      */
     private $availableNavigation = array();
     /**
-     * @var Refinement[]
+     * @var SelectedRefinement[]
      * @JMS\Type("array<GroupByInc\API\Model\Refinement>")
      */
     private $selectedRefinements = array();
@@ -179,7 +179,7 @@ class Results
     }
 
     /**
-     * @return Refinement[] A list of the currently selected refinements. Also known as breadcrumbs.
+     * @return SelectedRefinement[] A list of the currently selected refinements. Also known as breadcrumbs.
      */
     public function getSelectedRefinements()
     {
@@ -187,7 +187,7 @@ class Results
     }
 
     /**
-     * @param Refinement[] $selectedRefinements Set the selected refinements.
+     * @param SelectedRefinement[] $selectedRefinements Set the selected refinements.
      */
     public function setSelectedRefinements($selectedRefinements)
     {
