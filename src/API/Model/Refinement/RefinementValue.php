@@ -11,7 +11,7 @@ class RefinementValue extends Refinement
      * @var string
      * @JMS\Type("string")
      */
-    private $value;
+    public $value;
 
     /**
      * @return string The value of this refinement.

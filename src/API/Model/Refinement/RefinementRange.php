@@ -11,12 +11,12 @@ class RefinementRange extends Refinement
      * @var string
      * @JMS\Type("string")
      */
-    private $high;
+    public $high;
     /**
      * @var string
      * @JMS\Type("string")
      */
-    private $low;
+    public $low;
 
     /**
      * @return string The upper bound of this range.
