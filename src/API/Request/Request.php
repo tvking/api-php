@@ -3,6 +3,7 @@
 namespace GroupByInc\API\Request;
 
 use GroupByInc\API\Model\Navigation;
+use GroupByInc\API\Model\RestrictNavigation;
 use GroupByInc\API\Model\SelectedRefinement;
 
 class Request
@@ -45,4 +46,6 @@ class Request
     public $pruneRefinements;
     /** @var bool */
     public $wildcardSearchEnabled;
+    /** @var RestrictNavigation */
+    public $restrictNavigation;
 }
