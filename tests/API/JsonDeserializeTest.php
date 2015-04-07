@@ -13,6 +13,7 @@ use GroupByInc\API\Model\Record;
 use GroupByInc\API\Model\RecordsZone;
 use GroupByInc\API\Model\RefinementRange;
 use GroupByInc\API\Model\RefinementValue;
+use GroupByInc\API\Model\RestrictNavigation;
 use GroupByInc\API\Model\Results;
 use GroupByInc\API\Model\RichContentZone;
 use GroupByInc\API\Model\SelectedRefinement;
@@ -35,6 +36,7 @@ class JsonDeserializeTest extends PHPUnit_Framework_TestCase
     public static $JSON_TEMPLATE;
     public static $JSON_CLUSTER;
     public static $JSON_NAVIGATION;
+    public static $JSON_RESTRICT_NAVIGATION = '{"name":"categories","count":2}';
     /** @var Serializer */
     private static $serializer;
 
@@ -155,6 +157,13 @@ class JsonDeserializeTest extends PHPUnit_Framework_TestCase
         /** @var Template $template */
         $template = $this->deserialize(self::$JSON_TEMPLATE, 'GroupByInc\API\Model\Template');
         $this->assertEquals(JsonSerializeTest::$OBJ_TEMPLATE, $template);
+    }
+
+    public function testDeserializeRestrictNavigation()
+    {
+        /** @var RestrictNavigation $restrictNavigation */
+        $restrictNavigation = $this->deserialize(self::$JSON_RESTRICT_NAVIGATION, 'GroupByInc\API\Model\RestrictNavigation');
+        $this->assertEquals(JsonSerializeTest::$OBJ_RESTRICT_NAVIGATION, $restrictNavigation);
     }
 
     public function testDeserializeResults()

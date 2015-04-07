@@ -13,6 +13,7 @@ use GroupByInc\API\Model\Record;
 use GroupByInc\API\Model\RecordsZone;
 use GroupByInc\API\Model\RefinementRange;
 use GroupByInc\API\Model\RefinementValue;
+use GroupByInc\API\Model\RestrictNavigation;
 use GroupByInc\API\Model\RichContentZone;
 use GroupByInc\API\Model\Template;
 use GroupByInc\API\Model\Zone;
@@ -56,6 +57,8 @@ class JsonSerializeTest extends PHPUnit_Framework_TestCase
     public static $OBJ_REQUEST;
     /** @var Sort */
     public static $OBJ_SORT;
+    /** @var RestrictNavigation */
+    public static $OBJ_RESTRICT_NAVIGATION;
     private static $JSON_CUSTOM_URL_PARAM = '{"key":"guava","value":"mango"}';
     private static $JSON_SORT = '{"field":"price","order":"Descending"}';
     /** @var Serializer */
@@ -152,6 +155,10 @@ class JsonSerializeTest extends PHPUnit_Framework_TestCase
         self::$OBJ_SORT->setOrder(Sort\Order::Descending)
             ->setField("price");
 
+        self::$OBJ_RESTRICT_NAVIGATION = new RestrictNavigation();
+        self::$OBJ_RESTRICT_NAVIGATION->setCount(2)
+            ->setName("categories");
+
         self::$OBJ_REQUEST = new Request();
         self::$OBJ_REQUEST->clientKey = "adf7h8er7h2r";
         self::$OBJ_REQUEST->collection = "ducks";
@@ -168,6 +175,7 @@ class JsonSerializeTest extends PHPUnit_Framework_TestCase
         self::$OBJ_REQUEST->orFields = array("pumpernickel", "rye");
         self::$OBJ_REQUEST->refinements = array(self::$OBJ_REFINEMENT_RANGE, self::$OBJ_REFINEMENT_VALUE);
         self::$OBJ_REQUEST->customUrlParams = array(self::$OBJ_CUSTOM_URL_PARAM);
+        self::$OBJ_REQUEST->restrictNavigation = self::$OBJ_RESTRICT_NAVIGATION;
     }
 
     public function setUp()
@@ -273,6 +281,12 @@ class JsonSerializeTest extends PHPUnit_Framework_TestCase
             $this->serialize(self::$OBJ_TEMPLATE));
     }
 
+    public function testEncodeRestrictNavigation()
+    {
+        $this->assertJsonStringEqualsJsonString(JsonDeserializeTest::$JSON_RESTRICT_NAVIGATION,
+            $this->serialize(self::$OBJ_RESTRICT_NAVIGATION));
+    }
+
     public function testEncodeRequest()
     {
         $this->assertJsonStringEqualsJsonString('{"clientKey":"adf7h8er7h2r","collection":"ducks",' .
@@ -281,7 +295,8 @@ class JsonSerializeTest extends PHPUnit_Framework_TestCase
             '"sort":' . self::$JSON_SORT . ',"fields":["pineapple","grape","clementine"],' .
             '"orFields":["pumpernickel","rye"],"refinements":[' . JsonDeserializeTest::$JSON_REFINEMENT_RANGE . ',' .
             JsonDeserializeTest::$JSON_REFINEMENT_VALUE . '],' . '"customUrlParams":[' . self::$JSON_CUSTOM_URL_PARAM .
-            ']}', $this->serialize(self::$OBJ_REQUEST));
+            '],' . '"restrictNavigation":' . JsonDeserializeTest::$JSON_RESTRICT_NAVIGATION . '}',
+            $this->serialize(self::$OBJ_REQUEST));
     }
 }
 

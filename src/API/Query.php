@@ -7,6 +7,7 @@ use GroupByInc\API\Model\Refinement;
 use GroupByInc\API\Model\Refinement\Type;
 use GroupByInc\API\Model\RefinementRange;
 use GroupByInc\API\Model\RefinementValue;
+use GroupByInc\API\Model\RestrictNavigation;
 use GroupByInc\API\Model\SelectedRefinement;
 use GroupByInc\API\Model\SelectedRefinementRange;
 use GroupByInc\API\Model\SelectedRefinementValue;
@@ -65,6 +66,8 @@ class Query
     // Removed until CBOR support for serialization / de-serialization improves
 //    /** @var bool */
 //    private $returnBinary = false;
+    /** @var RestrictNavigation */
+    private $restrictNavigation;
 
     /** @var Serializer */
     private $serializer;
@@ -104,6 +107,7 @@ class Query
         $data->pageSize = $this->pageSize;
         $data->skip = $this->skip;
         $data->customUrlParams = $this->customUrlParams;
+        $data->restrictNavigation = $this->restrictNavigation;
 
         /** @var SelectedRefinement[] $refinements */
         $refinements = [];
@@ -579,6 +583,35 @@ class Query
     public function setWildcardSearchEnabled($wildcardSearchEnabled)
     {
         $this->wildcardSearchEnabled = $wildcardSearchEnabled;
+    }
+
+    /**
+     * <b>Warning</b>  This will count as two queries against your search index.
+     *
+     * Typically, this feature is used when you have a large number of navigation items that will overwhelm the end
+     * user. It works by using one of the existing navigation items to decide what the query is about and fires a second
+     * query to restrict the navigation to the most relevant set of navigation items for this search term.
+     *
+     * For example, if you pass in a search of `paper` and a restrict navigation of `category:2`
+     *
+     * The bridge will find the category navigation refinements in the first query and fire a second query for the top 2
+     * most populous categories.  Therefore, a search for something generic like "paper" will bring back top category
+     * matches like copy paper (1,030), paper pads (567).  The bridge will fire off the second query with the search
+     * term, plus an OR refinement with the most likely categories.  The navigation items in the first query are
+     * entirely replaced with the navigation items in the second query, except for the navigation that was used for the
+     * restriction so that users still have the ability to navigate by all category types.
+     *
+     * @param RestrictNavigation $restrictNavigation Restriction criteria
+     */
+    public function setRestrictNavigation($restrictNavigation)
+    {
+        $this->restrictNavigation = $restrictNavigation;
+    }
+
+    /** @return RestrictNavigation */
+    public function getRestrictNavigation()
+    {
+        return $this->restrictNavigation;
     }
 
     /**
