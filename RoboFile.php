@@ -3,16 +3,16 @@
 class RoboFile extends Robo\Tasks
 {
 
-    function build()
+    public function install()
     {
         $this->taskComposerUpdate('./composer.phar')
             ->preferDist()
             ->run();
     }
 
-    function test()
+    public function test()
     {
-        $this->build();
+        $this->install();
 
         $this->taskPhpUnit()
             ->configFile('phpunit.xml')
