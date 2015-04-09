@@ -64,6 +64,11 @@ class Navigation
      */
     public $or = false;
     /**
+     * @var bool
+     * @JMS\Type("boolean")
+     */
+    public $moreRefinements = false;
+    /**
      * @var Refinement[]
      * @JMS\Type("array<GroupByInc\API\Model\Refinement>")
      */
@@ -84,6 +89,7 @@ class Navigation
 
     /**
      * @param string $name The name of the navigation.
+     *
      * @return Navigation
      */
     public function setName($name)
@@ -102,6 +108,7 @@ class Navigation
 
     /**
      * @param string $displayName Set the display name.
+     *
      * @return Navigation
      */
     public function setDisplayName($displayName)
@@ -120,6 +127,7 @@ class Navigation
 
     /**
      * @param Refinement[] $refinements The refinement values.
+     *
      * @return Navigation
      */
     public function setRefinements($refinements)
@@ -138,6 +146,7 @@ class Navigation
 
     /**
      * @param string $id Set the ID.
+     *
      * @return Navigation
      */
     public function setId($id)
@@ -156,6 +165,7 @@ class Navigation
 
     /**
      * @param bool $range Set range.
+     *
      * @return Navigation
      */
     public function setRange($range)
@@ -174,6 +184,7 @@ class Navigation
 
     /**
      * @param bool $or Set whether this is an OR field.
+     *
      * @return Navigation
      */
     public function setOr($or)
@@ -192,6 +203,7 @@ class Navigation
 
     /**
      * @param string $type Set the type of navigation.
+     *
      * @return Navigation
      */
     public function setType($type)
@@ -210,6 +222,7 @@ class Navigation
 
     /**
      * @param string $sort Set the sort type.
+     *
      * @return Navigation
      */
     public function setSort($sort)
@@ -228,11 +241,31 @@ class Navigation
 
     /**
      * @param Metadata[] $metadata Set the metadata.
+     *
      * @return Navigation
      */
     public function setMetadata($metadata)
     {
         $this->metadata = $metadata;
+        return $this;
+    }
+
+    /**
+     * @return bool True if this navigation has more refinement values than the ones returned, false otherwise.
+     */
+    public function getMoreRefinements()
+    {
+        return $this->moreRefinements;
+    }
+
+    /**
+     * @param bool $moreRefinements True if this navigation has more refinement values than the ones returned.
+     *
+     * @return $this
+     */
+    public function setMoreRefinements($moreRefinements)
+    {
+        $this->moreRefinements = $moreRefinements;
         return $this;
     }
 
