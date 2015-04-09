@@ -13,6 +13,9 @@ abstract class AbstractBridge
 {
     const SEARCH = '/search';
     const CLUSTER = '/cluster';
+    const REFINEMENTS = '/refinements';
+    const RESULTS_CLASS = 'GroupByInc\API\Model\Results';
+    const REFINEMENTS_RESULT_CLASS = 'GroupByInc\API\Model\RefinementsResult';
     const HTTP = 'http://';
     const HTTPS = 'https://';
     const COLON = ':';
@@ -23,6 +26,8 @@ abstract class AbstractBridge
     private $bridgeUrl;
     /** @var string */
     private $bridgeUrlCluster;
+    /** @var string */
+    private $bridgeRefinementsUrl;
     /** @var Serializer */
     private $serializer;
 
@@ -35,26 +40,53 @@ abstract class AbstractBridge
         $this->clientKey = $clientKey;
         $this->bridgeUrl = $baseUrl . self::SEARCH;
         $this->bridgeUrlCluster = $baseUrl . self::CLUSTER;
+        $this->bridgeRefinementsUrl = $baseUrl . self::REFINEMENTS;
 
         $this->serializer = SerializerFactory::build();
     }
 
     /**
      * @param Query $query
+     *
      * @return mixed
      */
     public function search($query)
     {
         $content = $query->getBridgeJson($this->clientKey);
 
-        $response = $this->execute($this->bridgeUrl, $content);
+        return $this->query($this->bridgeUrl, $content, self::RESULTS_CLASS);
+    }
+
+    /**
+     * @param Query  $query
+     * @param string $navigationName
+     *
+     * @return mixed
+     */
+    public function refinements($query, $navigationName)
+    {
+        $content = $query->getBridgeRefinementsJson($this->clientKey, $navigationName);
+
+        return $this->query($this->bridgeRefinementsUrl, $content, self::REFINEMENTS_RESULT_CLASS);
+    }
+
+    /**
+     * @param string $url
+     * @param string $content
+     * @param string $class
+     *
+     * @return mixed
+     */
+    private function query($url, $content, $class)
+    {
+        $response = $this->execute($url, $content);
 
         if ($response->hasErrors()) {
-            throw new RuntimeException("Error: call to URL $this->bridgeUrl failed with status $response->code, response $response");
+            throw new RuntimeException("Error: call to URL $url failed with status $response->code, response $response");
         }
 
         if ($response->content_type !== Mime::JSON) {
-            throw new RuntimeException("Error: bridge at URL $this->bridgeUrl did not return the expected JSON response, it returned: " . $response->content_type . " instead");
+            throw new RuntimeException("Error: bridge at URL $url did not return the expected JSON response, it returned: " . $response->content_type . " instead");
         }
 
         $responseBody = $response->raw_body;
@@ -62,12 +94,13 @@ abstract class AbstractBridge
             $responseBody = gzdecode($responseBody);
         }
 
-        return $this->deserialize($responseBody);
+        return $this->deserialize($responseBody, $class);
     }
 
     /**
      * @param string $url
      * @param string $content
+     *
      * @return Response
      */
     protected function execute($url, $content)
@@ -80,6 +113,7 @@ abstract class AbstractBridge
 
     /**
      * @param Response $response
+     *
      * @return bool|string
      */
     private function getContentEncoding($response)
@@ -94,11 +128,11 @@ abstract class AbstractBridge
         return false;
     }
 
-    private function deserialize($json)
+    private function deserialize($json, $class)
     {
         $object = null;
         try {
-            $object = $this->serializer->deserialize($json, 'GroupByInc\API\Model\Results', 'json');
+            $object = $this->serializer->deserialize($json, $class, 'json');
         } catch (RuntimeException $e) {
             // should do something here
         }

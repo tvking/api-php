@@ -18,6 +18,7 @@ use GroupByInc\API\Model\RichContentZone;
 use GroupByInc\API\Model\Template;
 use GroupByInc\API\Model\Zone;
 use GroupByInc\API\Request\CustomUrlParam;
+use GroupByInc\API\Request\RefinementsRequest;
 use GroupByInc\API\Request\Request;
 use GroupByInc\API\Request\Sort;
 use GroupByInc\API\Util\SerializerFactory;
@@ -55,12 +56,12 @@ class JsonSerializeTest extends PHPUnit_Framework_TestCase
     public static $OBJ_CUSTOM_URL_PARAM;
     /** @var Request */
     public static $OBJ_REQUEST;
+    /** @var RefinementsRequest */
+    public static $OBJ_REFINEMENTS_REQUEST;
     /** @var Sort */
     public static $OBJ_SORT;
     /** @var RestrictNavigation */
     public static $OBJ_RESTRICT_NAVIGATION;
-    private static $JSON_CUSTOM_URL_PARAM = '{"key":"guava","value":"mango"}';
-    private static $JSON_SORT = '{"field":"price","order":"Descending"}';
     /** @var Serializer */
     private static $serializer;
 
@@ -109,7 +110,8 @@ class JsonSerializeTest extends PHPUnit_Framework_TestCase
             ->setRange(true)
             ->setSort(Navigation\Order::Value_Ascending)
             ->setMetadata(array(self::$OBJ_METADATA))
-            ->setRefinements(array(self::$OBJ_REFINEMENT_RANGE, self::$OBJ_REFINEMENT_VALUE));
+            ->setRefinements(array(self::$OBJ_REFINEMENT_RANGE, self::$OBJ_REFINEMENT_VALUE))
+            ->setMoreRefinements(true);
 
         self::$OBJ_RECORD = new Record();
         self::$OBJ_RECORD->setId("fw90314jh289t")
@@ -170,12 +172,36 @@ class JsonSerializeTest extends PHPUnit_Framework_TestCase
         self::$OBJ_REQUEST->pruneRefinements = true;
         self::$OBJ_REQUEST->returnBinary = false;
         self::$OBJ_REQUEST->query = "cantaloupe";
+        self::$OBJ_REQUEST->refinementQuery = "cranberry";
         self::$OBJ_REQUEST->sort = self::$OBJ_SORT;
         self::$OBJ_REQUEST->fields = array("pineapple", "grape", "clementine");
         self::$OBJ_REQUEST->orFields = array("pumpernickel", "rye");
         self::$OBJ_REQUEST->refinements = array(self::$OBJ_REFINEMENT_RANGE, self::$OBJ_REFINEMENT_VALUE);
         self::$OBJ_REQUEST->customUrlParams = array(self::$OBJ_CUSTOM_URL_PARAM);
+        self::$OBJ_REQUEST->wildcardSearchEnabled = true;
         self::$OBJ_REQUEST->restrictNavigation = self::$OBJ_RESTRICT_NAVIGATION;
+
+        self::$OBJ_REFINEMENTS_REQUEST = new RefinementsRequest();
+        self::$OBJ_REFINEMENTS_REQUEST->clientKey = "adf7h8er7h2r";
+        self::$OBJ_REFINEMENTS_REQUEST->collection = "ducks";
+        self::$OBJ_REFINEMENTS_REQUEST->area = "surface";
+        self::$OBJ_REFINEMENTS_REQUEST->skip = 12;
+        self::$OBJ_REFINEMENTS_REQUEST->pageSize = 30;
+        self::$OBJ_REFINEMENTS_REQUEST->biasingProfile = "ballooning";
+        self::$OBJ_REFINEMENTS_REQUEST->language = "en";
+        self::$OBJ_REFINEMENTS_REQUEST->pruneRefinements = true;
+        self::$OBJ_REFINEMENTS_REQUEST->returnBinary = false;
+        self::$OBJ_REFINEMENTS_REQUEST->query = "cantaloupe";
+        self::$OBJ_REFINEMENTS_REQUEST->refinementQuery = "cranberry";
+        self::$OBJ_REFINEMENTS_REQUEST->sort = self::$OBJ_SORT;
+        self::$OBJ_REFINEMENTS_REQUEST->fields = array("pineapple", "grape", "clementine");
+        self::$OBJ_REFINEMENTS_REQUEST->orFields = array("pumpernickel", "rye");
+        self::$OBJ_REFINEMENTS_REQUEST->refinements = array(self::$OBJ_REFINEMENT_RANGE, self::$OBJ_REFINEMENT_VALUE);
+        self::$OBJ_REFINEMENTS_REQUEST->customUrlParams = array(self::$OBJ_CUSTOM_URL_PARAM);
+        self::$OBJ_REFINEMENTS_REQUEST->wildcardSearchEnabled = true;
+        self::$OBJ_REFINEMENTS_REQUEST->restrictNavigation = self::$OBJ_RESTRICT_NAVIGATION;
+        self::$OBJ_REFINEMENTS_REQUEST->originalQuery = self::$OBJ_REQUEST;
+        self::$OBJ_REFINEMENTS_REQUEST->navigationName = "height";
     }
 
     public function setUp()
@@ -191,6 +217,7 @@ class JsonSerializeTest extends PHPUnit_Framework_TestCase
 
     /**
      * @param object $obj
+     *
      * @return string
      */
     private function serialize($obj)
@@ -212,7 +239,7 @@ class JsonSerializeTest extends PHPUnit_Framework_TestCase
 
     public function testEncodeCustomUrlParam()
     {
-        $this->assertJsonStringEqualsJsonString(self::$JSON_CUSTOM_URL_PARAM,
+        $this->assertJsonStringEqualsJsonString(JsonDeserializeTest::$JSON_CUSTOM_URL_PARAM,
             $this->serialize(self::$OBJ_CUSTOM_URL_PARAM));
     }
 
@@ -272,7 +299,7 @@ class JsonSerializeTest extends PHPUnit_Framework_TestCase
 
     public function testEncodeSort()
     {
-        $this->assertJsonStringEqualsJsonString(self::$JSON_SORT, $this->serialize(self::$OBJ_SORT));
+        $this->assertJsonStringEqualsJsonString(JsonDeserializeTest::$JSON_SORT, $this->serialize(self::$OBJ_SORT));
     }
 
     public function testEncodeTemplate()
@@ -289,14 +316,13 @@ class JsonSerializeTest extends PHPUnit_Framework_TestCase
 
     public function testEncodeRequest()
     {
-        $this->assertJsonStringEqualsJsonString('{"clientKey":"adf7h8er7h2r","collection":"ducks",' .
-            '"area":"surface","skip":12,"pageSize":30,"biasingProfile":"ballooning","language":"en",' .
-            '"pruneRefinements":true,"returnBinary":false,"query":"cantaloupe",' .
-            '"sort":' . self::$JSON_SORT . ',"fields":["pineapple","grape","clementine"],' .
-            '"orFields":["pumpernickel","rye"],"refinements":[' . JsonDeserializeTest::$JSON_REFINEMENT_RANGE . ',' .
-            JsonDeserializeTest::$JSON_REFINEMENT_VALUE . '],' . '"customUrlParams":[' . self::$JSON_CUSTOM_URL_PARAM .
-            '],' . '"restrictNavigation":' . JsonDeserializeTest::$JSON_RESTRICT_NAVIGATION . '}',
-            $this->serialize(self::$OBJ_REQUEST));
+        $this->assertJsonStringEqualsJsonString(JsonDeserializeTest::$JSON_REQUEST, $this->serialize(self::$OBJ_REQUEST));
+    }
+
+    public function testEncodeRefinementsRequest()
+    {
+        $this->assertJsonStringEqualsJsonString('{"originalQuery":' . JsonDeserializeTest::$JSON_REQUEST .
+            ',"navigationName":"height"}', $this->serialize(self::$OBJ_REFINEMENTS_REQUEST));
     }
 }
 

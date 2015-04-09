@@ -21,7 +21,7 @@ class Request
     /** @var string */
     public $query;
     /** @var string */
-    public $refinementSearch;
+    public $refinementQuery;
     /** @var Sort */
     public $sort;
 

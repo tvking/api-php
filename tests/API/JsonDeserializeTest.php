@@ -12,6 +12,7 @@ use GroupByInc\API\Model\PageInfo;
 use GroupByInc\API\Model\Record;
 use GroupByInc\API\Model\RecordsZone;
 use GroupByInc\API\Model\RefinementRange;
+use GroupByInc\API\Model\RefinementsResult;
 use GroupByInc\API\Model\RefinementValue;
 use GroupByInc\API\Model\RestrictNavigation;
 use GroupByInc\API\Model\Results;
@@ -32,11 +33,14 @@ class JsonDeserializeTest extends PHPUnit_Framework_TestCase
     public static $JSON_REFINEMENT_VALUE = '{"_id":"fadfs89y10j","count":987,"type":"Value","value":"malaise","exclude":false}';
     public static $JSON_REFINEMENT_RANGE = '{"high":"delicious","low":"atrocious","_id":"342h9582hh4","count":14,"type":"Range","exclude":true}';
     public static $JSON_PAGE_INFO = '{"recordStart":20,"recordEnd":50}';
+    public static $JSON_RESTRICT_NAVIGATION = '{"name":"categories","count":2}';
+    public static $JSON_CUSTOM_URL_PARAM = '{"key":"guava","value":"mango"}';
+    public static $JSON_SORT = '{"field":"price","order":"Descending"}';
     public static $JSON_RECORDS_ZONE;
     public static $JSON_TEMPLATE;
     public static $JSON_CLUSTER;
     public static $JSON_NAVIGATION;
-    public static $JSON_RESTRICT_NAVIGATION = '{"name":"categories","count":2}';
+    public static $JSON_REQUEST;
     /** @var Serializer */
     private static $serializer;
 
@@ -58,7 +62,16 @@ class JsonDeserializeTest extends PHPUnit_Framework_TestCase
         self::$JSON_NAVIGATION = '{"_id":"081h29n81f","name":"green","displayName":"GReeN",' .
             '"range":true,"or":false,"type":"Range_Date","sort":"Value_Ascending","refinements":[' .
             self::$JSON_REFINEMENT_RANGE . ',' . self::$JSON_REFINEMENT_VALUE .
-            '],"metadata":[' . self::$JSON_METADATA . ']}';
+            '],"metadata":[' . self::$JSON_METADATA . '],"moreRefinements":true}';
+
+        self::$JSON_REQUEST = '{"clientKey":"adf7h8er7h2r","collection":"ducks",' .
+            '"area":"surface","skip":12,"pageSize":30,"biasingProfile":"ballooning","language":"en",' .
+            '"pruneRefinements":true,"returnBinary":false,"query":"cantaloupe",' .
+            '"sort":' . self::$JSON_SORT . ',"fields":["pineapple","grape","clementine"],' .
+            '"orFields":["pumpernickel","rye"],"refinements":[' . self::$JSON_REFINEMENT_RANGE . ',' .
+            self::$JSON_REFINEMENT_VALUE . '],' . '"customUrlParams":[' . self::$JSON_CUSTOM_URL_PARAM .
+            '],' . '"restrictNavigation":' . self::$JSON_RESTRICT_NAVIGATION . ',"refinementQuery":"cranberry",' .
+            '"wildcardSearchEnabled":true}';
     }
 
     public function testDeserializeRefinementRange()
@@ -196,6 +209,19 @@ class JsonDeserializeTest extends PHPUnit_Framework_TestCase
 
         /** @var Results $results */
         $results = $this->deserialize($json, 'GroupByInc\API\Model\Results');
+        $this->assertEquals($expectedResults, $results);
+    }
+
+    public function testDeserializeRefinementsResult()
+    {
+        $expectedResults = new RefinementsResult();
+        $expectedResults->setErrors("Could not load");
+        $expectedResults->setNavigation(JsonSerializeTest::$OBJ_NAVIGATION);
+
+        $json = '{"errors":"Could not load","navigation":' . self::$JSON_NAVIGATION . '}';
+
+        /** @var RefinementsResult $results */
+        $results = $this->deserialize($json, 'GroupByInc\API\Model\RefinementsResult');
         $this->assertEquals($expectedResults, $results);
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use GroupByInc\API\Bridge;
+use GroupByInc\API\Model\RefinementsResult;
 use GroupByInc\API\Model\Results;
 use GroupByInc\API\Query;
 use Httpful\Request;
@@ -11,7 +12,8 @@ class BridgeTest extends PHPUnit_Framework_TestCase
     const CLIENT_KEY = 'randomkey';
     const HOST = 'localhost';
     const PORT = 8080;
-    const URL = 'http://localhost:8080/search';
+    const SEARCH_URL = 'http://localhost:8080/search';
+    const REFINEMENT_SEARCH_URL = 'http://localhost:8080/refinements';
     const HEADERS = "Status 200\r\nContent-Type:application/json\n";
     // Must match expected bridge json
     const TEST_QUERY = '{"clientKey":"randomkey","fields":[],"orFields":[],"refinements":[],"customUrlParams":[],"skip":0,"pageSize":10}';
@@ -20,7 +22,7 @@ class BridgeTest extends PHPUnit_Framework_TestCase
     public function testErroneousStatusCode()
     {
         $bridge = Phake::partialMock('GroupByInc\API\Bridge', self::CLIENT_KEY, self::HOST, self::PORT);
-        Phake::when($bridge)->execute(self::URL, self::TEST_QUERY)
+        Phake::when($bridge)->execute(self::SEARCH_URL, self::TEST_QUERY)
             ->thenReturn(new Response('{"foo":"bar"}', 'Status 400', Request::post('')));
 
         $query = new Query();
@@ -39,7 +41,7 @@ class BridgeTest extends PHPUnit_Framework_TestCase
     public function testErrorOnReturnBinary()
     {
         $bridge = Phake::partialMock('GroupByInc\API\Bridge', self::CLIENT_KEY, self::HOST, self::PORT);
-        Phake::when($bridge)->execute(self::URL, self::TEST_QUERY)
+        Phake::when($bridge)->execute(self::SEARCH_URL, self::TEST_QUERY)
             ->thenReturn(new Response('{"foo":"bar"}', "Status 200\r\nContent-Type:application/bson\n", Request::post('')));
 
         $query = new Query();
@@ -52,10 +54,10 @@ class BridgeTest extends PHPUnit_Framework_TestCase
         }
     }
 
-    public function testSearchUncompressedResponse()
+    public function testSearch()
     {
         $bridge = Phake::partialMock('GroupByInc\API\Bridge', self::CLIENT_KEY, self::HOST, self::PORT);
-        Phake::when($bridge)->execute(self::URL, self::TEST_QUERY)
+        Phake::when($bridge)->execute(self::SEARCH_URL, self::TEST_QUERY)
             ->thenReturn(new Response('{"query":"foobar"}', self::HEADERS, Request::post('')));
 
         $query = new Query();
@@ -68,7 +70,7 @@ class BridgeTest extends PHPUnit_Framework_TestCase
     public function testSearchCompressedResponse()
     {
         $bridge = Phake::partialMock('GroupByInc\API\Bridge', self::CLIENT_KEY, self::HOST, self::PORT);
-        Phake::when($bridge)->execute(self::URL, self::TEST_QUERY)
+        Phake::when($bridge)->execute(self::SEARCH_URL, self::TEST_QUERY)
             ->thenReturn(new Response('{"query":"foobar"}', self::HEADERS . "Content-Encoding:gzip\n", Request::post('')));
 
         $query = new Query();
@@ -76,6 +78,20 @@ class BridgeTest extends PHPUnit_Framework_TestCase
         /** @var Results $results */
         $results = $bridge->search($query);
         $this->assertEquals('foobar', $results->getQuery());
+    }
+
+    public function testSearchRefinements()
+    {
+        $refinementsQuery = '{"originalQuery":' . self::TEST_QUERY . ',"navigationName":"height"}';
+        $bridge = Phake::partialMock('GroupByInc\API\Bridge', self::CLIENT_KEY, self::HOST, self::PORT);
+        Phake::when($bridge)->execute(self::REFINEMENT_SEARCH_URL, $refinementsQuery)
+            ->thenReturn(new Response('{"navigation":{"name":"foobar"}}', self::HEADERS, Request::post('')));
+
+        $query = new Query();
+        /** @var Bridge $bridge */
+        /** @var RefinementsResult $results */
+        $results = $bridge->refinements($query, "height");
+        $this->assertEquals('foobar', $results->getNavigation()->getName());
     }
 
 //    public function testClusterSearch()

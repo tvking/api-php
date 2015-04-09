@@ -12,6 +12,7 @@ use GroupByInc\API\Model\SelectedRefinement;
 use GroupByInc\API\Model\SelectedRefinementRange;
 use GroupByInc\API\Model\SelectedRefinementValue;
 use GroupByInc\API\Request\CustomUrlParam;
+use GroupByInc\API\Request\RefinementsRequest;
 use GroupByInc\API\Request\Request;
 use GroupByInc\API\Request\Sort;
 use GroupByInc\API\Util\SerializerFactory;
@@ -73,7 +74,8 @@ class Query
     private $serializer;
 
     /**
-     * @param Request $request
+     * @param mixed $request
+     *
      * @return string
      */
     private function requestToJson($request)
@@ -90,28 +92,84 @@ class Query
 
     /**
      * @param string $clientKey Your client key.
+     *
      * @return string JSON representation of request to Bridge.
      */
     public function getBridgeJson($clientKey)
     {
-        $data = new Request();
-        $data->clientKey = $clientKey;
-        $data->area = $this->area;
-        $data->collection = $this->collection;
-        $data->query = $this->query;
-        $data->sort = $this->sort;
-        $data->fields = $this->fields;
-        $data->orFields = $this->orFields;
-        $data->language = $this->language;
-        $data->biasingProfile = $this->biasingProfile;
-        $data->pageSize = $this->pageSize;
-        $data->skip = $this->skip;
-        $data->customUrlParams = $this->customUrlParams;
-        $data->restrictNavigation = $this->restrictNavigation;
+        $data = $this->populateRequest($clientKey);
+        return $this->requestToJson($data);
+    }
 
-        /** @var SelectedRefinement[] $refinements */
+    /**
+     * @param string $clientKey      Your client key.
+     * @param string $navigationName Name of the navigation to get refinements for
+     *
+     * @return string JSON representation of request to Bridge.
+     */
+    public function getBridgeRefinementsJson($clientKey, $navigationName)
+    {
+        $data = new RefinementsRequest();
+        $data->originalQuery = $this->populateRequest($clientKey);
+        $data->navigationName = $navigationName;
+        return $this->requestToJson($data);
+    }
+
+    /**
+     * @param string $clientKey
+     *
+     * @return Request
+     */
+    private function populateRequest($clientKey)
+    {
+        $request = new Request();
+        $request->clientKey = $clientKey;
+        $request->area = $this->area;
+        $request->collection = $this->collection;
+        $request->query = $this->query;
+        $request->sort = $this->sort;
+        $request->fields = $this->fields;
+        $request->orFields = $this->orFields;
+        $request->language = $this->language;
+        $request->biasingProfile = $this->biasingProfile;
+        $request->pageSize = $this->pageSize;
+        $request->skip = $this->skip;
+        $request->customUrlParams = $this->customUrlParams;
+        $request->refinements = $this->generateSelectedRefinements($this->navigations);
+        $request->restrictNavigation = $this->restrictNavigation;
+
+        $pruneRefinements = $this->pruneRefinements;
+        if (isset($pruneRefinements) && $pruneRefinements === false) {
+            $request->pruneRefinements = false;
+        }
+
+        $disableAutocorrection = $this->disableAutocorrection;
+        if (isset($disableAutocorrection) && $disableAutocorrection === true) {
+            $request->disableAutocorrection = true;
+        }
+
+        $wildcardSearchEnabled = $this->wildcardSearchEnabled;
+        if (isset($wildcardSearchEnabled) && $wildcardSearchEnabled === true) {
+            $request->wildcardSearchEnabled = true;
+        }
+
+//        $returnBinary = $this->returnBinary;
+//        if (isset($returnBinary) && $returnBinary === true) {
+//            $request->returnBinary = true;
+//        }
+
+        return $request;
+    }
+
+    /**
+     * @param Navigation[] $navigations
+     *
+     * @return Refinement[]
+     */
+    private function generateSelectedRefinements($navigations)
+    {
         $refinements = [];
-        foreach ($this->navigations as $key => $navigation) {
+        foreach ($navigations as $key => $navigation) {
             foreach ($navigation->getRefinements() as $refinement) {
                 switch ($refinement->getType()) {
                     case Type::Range: {
@@ -142,33 +200,12 @@ class Query
                 }
             }
         }
-        $data->refinements = $refinements;
-
-        $pruneRefinements = $this->pruneRefinements;
-        if (isset($pruneRefinements) && $pruneRefinements === false) {
-            $data->pruneRefinements = false;
-        }
-
-        $disableAutocorrection = $this->disableAutocorrection;
-        if (isset($disableAutocorrection) && $disableAutocorrection === true) {
-            $data->disableAutocorrection = true;
-        }
-
-        $wildcardSearchEnabled = $this->wildcardSearchEnabled;
-        if (isset($wildcardSearchEnabled) && $wildcardSearchEnabled === true) {
-            $data->wildcardSearchEnabled = true;
-        }
-
-//        $returnBinary = $this->returnBinary;
-//        if (isset($returnBinary) && $returnBinary === true) {
-//            $data->returnBinary = true;
-//        }
-
-        return $this->requestToJson($data);
+        return $refinements;
     }
 
     /**
      * @param string $clientKey Your client key.
+     *
      * @return string JSON representation of request to Bridge.
      */
     public function getBridgeJsonRefinementSearch($clientKey)
@@ -177,7 +214,7 @@ class Query
         $data->clientKey = $clientKey;
         $data->collection = $this->collection;
         $data->area = $this->area;
-        $data->refinementSearch = $this->query;
+        $data->refinementQuery = $this->query;
 
         $wildcardSearchEnabled = $this->wildcardSearchEnabled;
         if (isset($wildcardSearchEnabled) && $wildcardSearchEnabled === true) {
@@ -306,7 +343,7 @@ class Query
 
     /**
      * @param string $field The field to sort on.
-     * @param int $order The sort order.
+     * @param int    $order The sort order.
      */
     public function setSortByField($field, $order)
     {
@@ -315,7 +352,7 @@ class Query
     }
 
     /**
-     * @param string $name The parameter name.
+     * @param string $name  The parameter name.
      * @param string $value The parameter value.
      */
     public function addCustomUrlParamByName($name, $value)
@@ -381,8 +418,8 @@ class Query
     }
 
     /**
-     * @param string $navigationName The name of the Navigation.
-     * @param Refinement $refinement A RefinementRange or RefinementValue object.
+     * @param string     $navigationName The name of the Navigation.
+     * @param Refinement $refinement     A RefinementRange or RefinementValue object.
      */
     public function addRefinement($navigationName, $refinement)
     {
@@ -401,9 +438,9 @@ class Query
 
     /**
      * @param string $navigationName The name of the refinement.
-     * @param mixed $low The low value.
-     * @param mixed $high The high value.
-     * @param bool $exclude True if the results should exclude this range refinement, false otherwise.
+     * @param mixed  $low            The low value.
+     * @param mixed  $high           The high value.
+     * @param bool   $exclude        True if the results should exclude this range refinement, false otherwise.
      */
     public function addRangeRefinement($navigationName, $low, $high, $exclude = false)
     {
@@ -413,8 +450,8 @@ class Query
 
     /**
      * @param string $navigationName The name of the refinement.
-     * @param mixed $value The refinement value.
-     * @param bool $exclude True if the results should exclude this value refinement, false otherwise.
+     * @param mixed  $value          The refinement value.
+     * @param bool   $exclude        True if the results should exclude this value refinement, false otherwise.
      */
     public function addValueRefinement($navigationName, $value, $exclude = false)
     {
@@ -560,8 +597,9 @@ class Query
 
     /**
      * @param boolean $disableAutocorrection Specifies whether the auto-correction behavior should be disabled.
-     * By default, when no results are returned for the given query (and there is a did-you-mean available),
-     * the first did-you-mean is automatically queried instead.
+     *                                       By default, when no results are returned for the given query (and there is
+     *                                       a did-you-mean available), the first did-you-mean is automatically queried
+     *                                       instead.
      */
     public function setDisableAutocorrection($disableAutocorrection)
     {
@@ -578,7 +616,8 @@ class Query
 
     /**
      * @param boolean $wildcardSearchEnabled Indicate if the *(star) character in the search string should be treated
-     * as a wildcard prefix search. For example, `sta*` will match `star` and `start`.
+     *                                       as a wildcard prefix search. For example, `sta*` will match `star` and
+     *                                       `start`.
      */
     public function setWildcardSearchEnabled($wildcardSearchEnabled)
     {
