@@ -12,7 +12,7 @@ class CloudBridgeTest extends PHPUnit_Framework_TestCase
     const CLIENT_KEY = 'randomkey';
     const DOMAIN = 'testdomain';
     const SEARCH_URL = 'https://testdomain.groupbycloud.com:443/api/v1/search';
-    const REFINEMENT_SEARCH_URL = 'https://testdomain.groupbycloud.com:443/api/v1/refinements';
+    const REFINEMENT_SEARCH_URL = 'https://testdomain.groupbycloud.com:443/api/v1/search/refinements';
     const HEADERS = "Status 200\r\nContent-Type:application/json\n";
     // Must match expected bridge json
     const TEST_QUERY = '{"clientKey":"randomkey","fields":[],"orFields":[],"refinements":[],"customUrlParams":[],"skip":0,"pageSize":10}';

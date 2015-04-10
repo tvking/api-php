@@ -13,7 +13,7 @@ class BridgeTest extends PHPUnit_Framework_TestCase
     const HOST = 'localhost';
     const PORT = 8080;
     const SEARCH_URL = 'http://localhost:8080/search';
-    const REFINEMENT_SEARCH_URL = 'http://localhost:8080/refinements';
+    const REFINEMENT_SEARCH_URL = 'http://localhost:8080/search/refinements';
     const HEADERS = "Status 200\r\nContent-Type:application/json\n";
     // Must match expected bridge json
     const TEST_QUERY = '{"clientKey":"randomkey","fields":[],"orFields":[],"refinements":[],"customUrlParams":[],"skip":0,"pageSize":10}';

@@ -40,7 +40,7 @@ abstract class AbstractBridge
         $this->clientKey = $clientKey;
         $this->bridgeUrl = $baseUrl . self::SEARCH;
         $this->bridgeUrlCluster = $baseUrl . self::CLUSTER;
-        $this->bridgeRefinementsUrl = $baseUrl . self::REFINEMENTS;
+        $this->bridgeRefinementsUrl = $baseUrl . self::SEARCH . self::REFINEMENTS;
 
         $this->serializer = SerializerFactory::build();
     }
