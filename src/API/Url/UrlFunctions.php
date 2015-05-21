@@ -6,6 +6,7 @@ use GroupByInc\API\Model\Navigation;
 use GroupByInc\API\Model\SelectedRefinement;
 use GroupByInc\API\Query;
 use GroupByInc\API\Util\ArrayUtils;
+use GroupByInc\API\Util\DeepCopy;
 use RuntimeException;
 
 class UrlFunctions
@@ -14,18 +15,16 @@ class UrlFunctions
     /**
      * @param string       $identifier     The unique url beautifier identifier.
      * @param string       $searchString
-     * @param Navigation[] $navigations    List of currently selected navigations. It will be updated to include the
-     *                                     specified refinement
+     * @param Navigation[] $navigations    List of currently selected navigations.
      * @param string       $navigationName Name of the navigation to add the refinement to.
      * @param SelectedRefinement   $refinement     Refinement to add.
      * @return string
      * @throws RuntimeException
      */
-    public static function toUrlAdd($identifier, $searchString, array &$navigations, $navigationName, SelectedRefinement $refinement)
+    public static function toUrlAdd($identifier, $searchString, array $navigations, $navigationName, SelectedRefinement $refinement)
     {
         $beautifier = self::getBeautifier($identifier);
         $query = self::addRefinements($navigations, $navigationName, $refinement);
-        $navigations = $query->getNavigations();
         return $beautifier->toUrl($searchString, $query->getRefinementString());
     }
 
@@ -99,7 +98,9 @@ class UrlFunctions
         $query = new Query();
         $newNavigations = &$query->getNavigations();
         if ($navigations != null) {
-            foreach ($navigations as $n) {
+            $deepCopy = new DeepCopy();
+            $navs = $deepCopy->copy($navigations);
+            foreach ($navs as $n) {
                 $newNavigations[$n->getName()] = $n;
             }
         }
