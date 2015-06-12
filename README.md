@@ -19,6 +19,30 @@ For more on robo php taskrunner see [here](http://codegyre.github.io/Robo/).
     robo test
 
 ### To add a dependency to this project
+
+#### Composer
 Add the following to the `require` block of your composer.json
 
-    "groupby/api-php": "2.0.130"
+```json
+"groupby/api": "2.0.130"
+```
+
+or run
+
+    composer require groupby/api:2.0.130
+
+#### [On Packagist](https://packagist.org/packages/groupby/api)
+
+### Examples
+
+#### Searching
+
+```php
+$bridge = new CloudBridge('<client key', 'myCustomerId');
+$query = new Query();
+$query->setQuery('dvd');
+/** @var Results $results */
+$results = $bridge->search($query);
+```
+
+### [Quickstart Web Application](https://github.com/groupby/quickstart-php)
