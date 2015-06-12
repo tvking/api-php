@@ -10,5 +10,15 @@ PHP API
 
 For more on robo php taskrunner see [here](http://codegyre.github.io/Robo/).
 
-1. install dependencies using `robo install`
-1. run tests with `robo test`
+### To install
+
+    robo install
+  
+### To test
+
+    robo test
+
+### To add a dependency to this project
+Add the following to the `require` block of your composer.json
+
+    "groupby/api-php": "2.0.130"
