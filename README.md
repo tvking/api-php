@@ -1,7 +1,10 @@
 GroupBy Search API
 =======
 
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/groupby/api-php/badges/quality-score.png?b=develop)](https://scrutinizer-ci.com/g/groupby/api-php/?branch=develop) [![Build Status](https://travis-ci.org/groupby/api-php.png)](https://travis-ci.org/groupby/api-php)
+[![Scrutinizer Code Quality](https://img.shields.io/scrutinizer/g/groupby/api-php.svg)](https://scrutinizer-ci.com/g/groupby/api-php/?branch=develop)
+[![Build Status](https://img.shields.io/travis/groupby/api-php.svg)](https://travis-ci.org/groupby/api-php)
+[![Packagist Version](https://img.shields.io/packagist/v/groupby/api.svg)](https://packagist.org/packages/groupby/api)
+[![Packagist Downloads](https://img.shields.io/packagist/dt/groupby/api.svg)](https://packagist.org/packages/groupby/api)
 
 ### Setup Instructions
 
@@ -27,8 +30,6 @@ Add the following to the `require` block of your composer.json
 or run
 
     composer require groupby/api:2.0.130
-
-#### [On Packagist](https://packagist.org/packages/groupby/api)
 
 ### Examples
 
