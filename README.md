@@ -5,6 +5,7 @@ GroupBy Search API
 [![Build Status](https://img.shields.io/travis/groupby/api-php.svg)](https://travis-ci.org/groupby/api-php)
 [![Packagist Version](https://img.shields.io/packagist/v/groupby/api.svg)](https://packagist.org/packages/groupby/api)
 [![Packagist Downloads](https://img.shields.io/packagist/dt/groupby/api.svg)](https://packagist.org/packages/groupby/api)
+![license](https://img.shields.io/github/license/groupby/api-php.svg)
 
 ### Setup Instructions
 
