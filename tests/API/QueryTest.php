@@ -68,6 +68,76 @@ class QueryTest extends PHPUnit_Framework_TestCase
         $json = $query->getBridgeRefinementsJson('XXXX-XXXX-XXXX-XXXX', 'height');
         $this->assertEquals(self::$REFINEMENTS_QUERY, $json);
     }
+
+
+    public function testSplitRange()
+    {
+        $query = new Query();
+        $split = $query->splitRefinements("test=bob~price:10..20");
+        $this->assertEquals(["test=bob", "price:10..20"], $split);
+    }
+
+    public function testSplitNoCategory()
+    {
+        $query = new Query();
+        $split = $query->splitRefinements("~gender=Women~simpleColorDesc=Pink~product=Clothing");
+        $this->assertEquals(["gender=Women", "simpleColorDesc=Pink", "product=Clothing"], $split);
+    }
+
+    public function testSplitCategory()
+    {
+        $query = new Query();
+        $split = $query->splitRefinements("~category_leaf_expanded=Category Root~Athletics~Men's~Sneakers");
+        $this->assertEquals(["category_leaf_expanded=Category Root~Athletics~Men's~Sneakers"], $split);
+    }
+
+    public function testSplitMultipleCategory()
+    {
+        $query = new Query();
+        $split = $query->splitRefinements("~category_leaf_expanded=Category Root~Athletics~Men's~Sneakers~category_leaf_id=580003");
+        $this->assertEquals(["category_leaf_expanded=Category Root~Athletics~Men's~Sneakers", "category_leaf_id=580003"], $split);
+    }
+
+    public function testSplitRangeAndMultipleCategory()
+    {
+        $query = new Query();
+        $split = $query->splitRefinements("test=bob~price:10..20~category_leaf_expanded=Category Root~Athletics~Men's" .
+        "~Sneakers~category_leaf_id=580003~color=BLUE~color=YELLOW~color=GREY");
+        $this->assertEquals(["test=bob", "price:10..20",
+                                       "category_leaf_expanded=Category Root~Athletics~Men's~Sneakers", "category_leaf_id=580003",
+                                       "color=BLUE", "color=YELLOW", "color=GREY"], $split);
+    }
+
+    public function testSplitCategoryLong()
+    {
+        $query = new Query();
+        $split = $query->splitRefinements("~category_leaf_expanded=Category Root~Athletics~Men's~Sneakers~category_leaf_id=580003~" .
+            "color=BLUE~color=YELLOW~color=GREY~feature=Lace Up~feature=Light Weight~brand=Nike");
+        $this->assertEquals(["category_leaf_expanded=Category Root~Athletics~Men's~Sneakers", "category_leaf_id=580003",
+                        "color=BLUE", "color=YELLOW", "color=GREY", "feature=Lace Up", "feature=Light Weight",
+                        "brand=Nike"], $split);
+    }
+
+    public function testNull()
+    {
+        $query = new Query();
+        $split = $query->splitRefinements(null);
+        $this->assertEquals([], $split);
+    }
+
+    public function testEmpty()
+    {
+        $query = new Query();
+        $split = $query->splitRefinements("");
+        $this->assertEquals([], $split);
+    }
+
+    public function testUtf8()
+    {
+        $query = new Query();
+        $split = $query->splitRefinements("tëst=bäb~price:10..20");
+        $this->assertEquals(["tëst=bäb", "price:10..20"], $split);
+    }
 }
 
 QueryTest::init();

@@ -73,6 +73,8 @@ class Query
     /** @var Serializer */
     private $serializer;
 
+    const TILDE_REGEX = "/~((?=[\\w]*[=:]))/";
+
     /**
      * @param mixed $request
      *
@@ -369,6 +371,13 @@ class Query
         array_push($this->customUrlParams, $param);
     }
 
+    public function splitRefinements($refinementString) {
+        if(StringUtils::isNotBlank($refinementString)) {
+            return preg_split(self::TILDE_REGEX, $refinementString, -1, PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
+        }
+        return [];
+    }
+
     /**
      * @param string $refinementString A tilde separated list of refinements.
      */
@@ -378,7 +387,7 @@ class Query
             return;
         }
 
-        $refinementStrings = explode(Symbol::TILDE, $refinementString);
+        $refinementStrings = self::splitRefinements($refinementString);
         foreach ($refinementStrings as $refinementString) {
             if (empty($refinementString) || "=" == $refinementString) {
                 continue;
