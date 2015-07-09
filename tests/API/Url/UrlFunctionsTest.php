@@ -188,4 +188,18 @@ class UrlFunctionsTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("/Women/Kid/Pink/ggc/index.html", $url);
     }
 
+    public function testRefinementAdditionWithCategoryExpansion () {
+        $navigations = [];
+
+        $this->beautifier->addRefinementMapping('s', "size");
+        $this->beautifier->setAppend("/index.html");
+
+        $refinement = new SelectedRefinementValue();
+        $refinement->setValue("Category Root~Athletics~Men's~Sneakers");
+
+
+        $url = UrlFunctions::toUrlAdd(self::DEFAULT_BEAUTIFIER, '', $navigations, 'category_leaf_expanded', $refinement);
+        $this->assertEquals("/index.html?refinements=%7Ecategory_leaf_expanded%3DCategory+Root%7EAthletics%7EMen%27s%7ESneakers", $url);
+    }
+
 }
