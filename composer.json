@@ -16,7 +16,7 @@
   "require": {
     "php": ">=5.4.0",
     "nategood/httpful": "0.2.19",
-    "groupby/serializer": "0.16.1"
+    "jms/serializer": "1.0.0"
   },
   "require-dev": {
     "monolog/monolog": "1.11.0",
