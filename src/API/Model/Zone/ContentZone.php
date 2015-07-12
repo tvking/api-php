@@ -16,12 +16,12 @@ class ContentZone extends AbstractContentZone
 
     /**
      * @param string $content
+     *
      * @return ContentZone
      */
     public function setContent($content)
     {
-        parent::setContent($content);
-        return $this;
+        return parent::setContent($content);
     }
 
     /**

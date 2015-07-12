@@ -44,8 +44,8 @@ class Navigation
      */
     public $type;
     /**
-     * @var string
-     * @JMS\Type("string")
+     * @var Sort
+     * @JMS\Type("GroupByInc\API\Model\Sort")
      */
     public $sort;
     /**
@@ -213,7 +213,7 @@ class Navigation
     }
 
     /**
-     * @return string The sort option for this navigation.
+     * @return Sort The sort option for this navigation.
      */
     public function getSort()
     {
@@ -221,7 +221,7 @@ class Navigation
     }
 
     /**
-     * @param string $sort Set the sort type.
+     * @param Sort $sort Set the sort type.
      *
      * @return Navigation
      */

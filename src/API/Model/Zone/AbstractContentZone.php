@@ -10,7 +10,7 @@ abstract class AbstractContentZone extends Zone
      * @var string
      * @JMS\Type("string")
      */
-    private $content;
+    public $content;
 
     /**
      * @return string If this zone is not a Record zone this will represent the value set by the merchandiser.
@@ -22,9 +22,12 @@ abstract class AbstractContentZone extends Zone
 
     /**
      * @param string $content Set the content.
+     *
+     * @return $this
      */
     protected function setContent($content)
     {
         $this->content = $content;
+        return $this;
     }
 }

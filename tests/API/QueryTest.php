@@ -3,31 +3,37 @@
 require_once __DIR__ . '/JsonSerializeTest.php';
 
 use GroupByInc\API\Query;
-use GroupByInc\API\Request\Sort;
+use GroupByInc\API\Model\Sort;
 use Httpful\Response;
 
 class QueryTest extends PHPUnit_Framework_TestCase
 {
     private static $QUERY;
     private static $REFINEMENTS_QUERY;
+    private static $SORT;
 
     public static function init()
     {
         self::$QUERY = '{"clientKey":"XXXX-XXXX-XXXX-XXXX","collection":"testproducts","area":"Production",' .
-            '"biasingProfile":"testProfile","language":"en","query":"the","sort":{"field":"price","order":"Descending"},' .
+            '"biasingProfile":"testProfile","language":"en","query":"the","sort":[{"field":"price","order":"Descending"}],' .
             '"fields":["brand","category","height"],"orFields":["price","color"],"refinements":[{"navigationName":"green",' .
             '"exclude":true,"high":"delicious","low":"atrocious","type":"Range"},{"navigationName":"green","exclude":false,' .
             '"value":"malaise","type":"Value"}],"customUrlParams":[{"key":"guava","value":"mango"}],"skip":20,"pageSize":14,' .
             '"disableAutocorrection":true,"pruneRefinements":false,"wildcardSearchEnabled":true}';
 
         self::$REFINEMENTS_QUERY = '{"originalQuery":' . self::$QUERY . ',"navigationName":"height"}';
+
+        self::$SORT = new Sort();
+        self::$SORT->setOrder(Sort\Order::Descending)
+            ->setField("price");
+
     }
 
     public function testSerializeQuery()
     {
         $query = new Query();
         $query->setQuery('the');
-        $query->setSort(JsonSerializeTest::$OBJ_SORT);
+        $query->setSort(array(self::$SORT));
         $query->setSkip(20);
         $query->setPageSize(14);
         $query->setCollection('testproducts');
@@ -50,7 +56,7 @@ class QueryTest extends PHPUnit_Framework_TestCase
     {
         $query = new Query();
         $query->setQuery('the');
-        $query->setSort(JsonSerializeTest::$OBJ_SORT);
+        $query->setSort(array(self::$SORT));
         $query->setSkip(20);
         $query->setPageSize(14);
         $query->setCollection('testproducts');
@@ -102,10 +108,10 @@ class QueryTest extends PHPUnit_Framework_TestCase
     {
         $query = new Query();
         $split = $query->splitRefinements("test=bob~price:10..20~category_leaf_expanded=Category Root~Athletics~Men's" .
-        "~Sneakers~category_leaf_id=580003~color=BLUE~color=YELLOW~color=GREY");
+            "~Sneakers~category_leaf_id=580003~color=BLUE~color=YELLOW~color=GREY");
         $this->assertEquals(["test=bob", "price:10..20",
-                                       "category_leaf_expanded=Category Root~Athletics~Men's~Sneakers", "category_leaf_id=580003",
-                                       "color=BLUE", "color=YELLOW", "color=GREY"], $split);
+            "category_leaf_expanded=Category Root~Athletics~Men's~Sneakers", "category_leaf_id=580003",
+            "color=BLUE", "color=YELLOW", "color=GREY"], $split);
     }
 
     public function testSplitCategoryLong()
@@ -114,8 +120,8 @@ class QueryTest extends PHPUnit_Framework_TestCase
         $split = $query->splitRefinements("~category_leaf_expanded=Category Root~Athletics~Men's~Sneakers~category_leaf_id=580003~" .
             "color=BLUE~color=YELLOW~color=GREY~feature=Lace Up~feature=Light Weight~brand=Nike");
         $this->assertEquals(["category_leaf_expanded=Category Root~Athletics~Men's~Sneakers", "category_leaf_id=580003",
-                        "color=BLUE", "color=YELLOW", "color=GREY", "feature=Lace Up", "feature=Light Weight",
-                        "brand=Nike"], $split);
+            "color=BLUE", "color=YELLOW", "color=GREY", "feature=Lace Up", "feature=Light Weight",
+            "brand=Nike"], $split);
     }
 
     public function testNull()

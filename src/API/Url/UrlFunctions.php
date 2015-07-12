@@ -3,7 +3,7 @@
 namespace GroupByInc\API\Url;
 
 use GroupByInc\API\Model\Navigation;
-use GroupByInc\API\Model\SelectedRefinement;
+use GroupByInc\API\Request\SelectedRefinement;
 use GroupByInc\API\Query;
 use GroupByInc\API\Util\ArrayUtils;
 use GroupByInc\API\Util\DeepCopy;

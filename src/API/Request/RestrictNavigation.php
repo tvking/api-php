@@ -1,12 +1,6 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: groupby
- * Date: 07/04/15
- * Time: 10:56 AM
- */
 
-namespace GroupByInc\API\Model;
+namespace GroupByInc\API\Request;
 
 use JMS\Serializer\Annotation as JMS;
 
@@ -14,18 +8,21 @@ class RestrictNavigation
 {
     /**
      * @var string
+     *
      * @JMS\Type("string")
      */
-    public $name;
+    private $name;
 
     /**
      * @var int
+     *
      * @JMS\Type("integer")
      */
-    public $count;
+    private $count;
 
     /**
      * @param string $name Set the name of the field should be used in the navigation restriction in the second query.
+     *
      * @return $this
      */
     public function setName($name)
@@ -52,6 +49,7 @@ class RestrictNavigation
 
     /**
      * @param int $count Set the tnumber of fields matches.
+     *
      * @return $this
      */
     public function setCount($count)

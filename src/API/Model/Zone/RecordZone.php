@@ -5,13 +5,37 @@ namespace GroupByInc\API\Model;
 use GroupByInc\API\Model\Zone\Type;
 use JMS\Serializer\Annotation as JMS;
 
-class RecordsZone extends Zone
+class RecordZone extends Zone
 {
+    /**
+     * @var string
+     * @JMS\Type("string")
+     */
+    public $query;
     /**
      * @var Record[]
      * @JMS\Type("array<GroupByInc\API\Model\Record>")
      */
     public $records = array();
+
+    /**
+     * @return string The query that was fired for this zone.
+     */
+    public function getQuery()
+    {
+        return $this->query;
+    }
+
+    /**
+     * @param string $query Set the query
+     *
+     * @return RecordZone
+     */
+    public function setQuery($query)
+    {
+        $this->query = $query;
+        return $this;
+    }
 
     /**
      * @return Record[] If this zone is a record zone, a list of records returned from the bridge.
@@ -23,7 +47,8 @@ class RecordsZone extends Zone
 
     /**
      * @param Record[] $records Set the records.
-     * @return RecordsZone
+     *
+     * @return RecordZone
      */
     public function setRecords($records)
     {

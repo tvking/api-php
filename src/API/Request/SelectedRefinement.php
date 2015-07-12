@@ -1,6 +1,6 @@
 <?php
 
-namespace GroupByInc\API\Model\SelectedRefinement;
+namespace GroupByInc\API\Request\SelectedRefinement;
 
 class Type
 {
@@ -8,14 +8,15 @@ class Type
     const Value = 'Value';
 }
 
-namespace GroupByInc\API\Model;
+namespace GroupByInc\API\Request;
 
+use GroupByInc\API\Request\SelectedRefinement\Type;
 use JMS\Serializer\Annotation as JMS;
 
 /**
  * @JMS\Discriminator(field = "type", map = {
- *  "Range": "GroupByInc\API\Model\SelectedRefinementRange",
- *  "Value": "GroupByInc\API\Model\SelectedRefinementValue"
+ *  "Range": "GroupByInc\API\Request\SelectedRefinementRange",
+ *  "Value": "GroupByInc\API\Request\SelectedRefinementValue"
  * })
  */
 abstract class SelectedRefinement
@@ -43,6 +44,7 @@ abstract class SelectedRefinement
 
     /**
      * @param string $id
+     *
      * @return $this
      */
     public function setId($id)
@@ -61,6 +63,7 @@ abstract class SelectedRefinement
 
     /**
      * @param string $navigationName
+     *
      * @return $this
      */
     public function setNavigationName($navigationName)
@@ -79,6 +82,7 @@ abstract class SelectedRefinement
 
     /**
      * @param boolean $exclude
+     *
      * @return $this
      */
     public function setExclude($exclude)
@@ -88,14 +92,17 @@ abstract class SelectedRefinement
     }
 
     /**
+     * @return bool
+     */
+    public function isRange()
+    {
+        return $this->getType() === Type::Range;
+    }
+
+    /**
      * @return string
      */
     public abstract function getType();
-
-    /**
-     * @return bool
-     */
-    public abstract function isRange();
 
     /**
      * @return string

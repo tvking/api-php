@@ -105,6 +105,8 @@ abstract class AbstractBridge
      */
     protected function execute($url, $content)
     {
+        echo $content;
+
         return Request::post($url)
             ->body($content)
             ->sendsType(Mime::JSON)

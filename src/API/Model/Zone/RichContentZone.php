@@ -14,12 +14,12 @@ class RichContentZone extends AbstractContentZone
 
     /**
      * @param string $richContent
+     *
      * @return RichContentZone
      */
     public function setRichContent($richContent)
     {
-        $this->setContent($richContent);
-        return $this;
+        return $this->setContent($richContent);
     }
 
     /**

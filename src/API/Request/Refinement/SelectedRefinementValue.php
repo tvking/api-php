@@ -1,6 +1,6 @@
 <?php
 
-namespace GroupByInc\API\Model;
+namespace GroupByInc\API\Request;
 
 use GroupByInc\API\Model\Refinement\Type;
 use JMS\Serializer\Annotation as JMS;
@@ -28,11 +28,6 @@ class SelectedRefinementValue extends SelectedRefinement
     {
         $this->value = $value;
         return $this;
-    }
-
-    public function isRange()
-    {
-        return false;
     }
 
     public function toTildeString()

@@ -6,21 +6,24 @@ use GroupByInc\API\Model\BannerZone;
 use GroupByInc\API\Model\Cluster;
 use GroupByInc\API\Model\ClusterRecord;
 use GroupByInc\API\Model\ContentZone;
+use GroupByInc\API\Model\CustomUrlParam;
 use GroupByInc\API\Model\Metadata;
 use GroupByInc\API\Model\Navigation;
 use GroupByInc\API\Model\PageInfo;
 use GroupByInc\API\Model\Record;
-use GroupByInc\API\Model\RecordsZone;
+use GroupByInc\API\Model\RecordZone;
+use GroupByInc\API\Model\RefinementMatch;
 use GroupByInc\API\Model\RefinementRange;
 use GroupByInc\API\Model\RefinementValue;
-use GroupByInc\API\Model\RestrictNavigation;
 use GroupByInc\API\Model\RichContentZone;
+use GroupByInc\API\Model\Sort;
 use GroupByInc\API\Model\Template;
 use GroupByInc\API\Model\Zone;
-use GroupByInc\API\Request\CustomUrlParam;
+use GroupByInc\API\Request\MatchStrategy;
+use GroupByInc\API\Request\PartialMatchRule;
 use GroupByInc\API\Request\RefinementsRequest;
 use GroupByInc\API\Request\Request;
-use GroupByInc\API\Request\Sort;
+use GroupByInc\API\Request\RestrictNavigation;
 use GroupByInc\API\Util\SerializerFactory;
 use JMS\Serializer\Serializer;
 
@@ -46,8 +49,12 @@ class JsonSerializeTest extends PHPUnit_Framework_TestCase
     public static $OBJ_BANNER_ZONE;
     /** @var RichContentZone */
     public static $OBJ_RICH_CONTENT_ZONE;
-    /** @var RecordsZone */
-    public static $OBJ_RECORDS_ZONE;
+    /** @var RecordZone */
+    public static $OBJ_RECORD_ZONE;
+    /** @var RefinementMatch\Value */
+    public static $OBJ_REFINEMENT_MATCH_VALUE;
+    /** @var RefinementMatch */
+    public static $OBJ_REFINEMENT_MATCH;
     /** @var Record */
     public static $OBJ_RECORD;
     /** @var Template */
@@ -62,6 +69,10 @@ class JsonSerializeTest extends PHPUnit_Framework_TestCase
     public static $OBJ_SORT;
     /** @var RestrictNavigation */
     public static $OBJ_RESTRICT_NAVIGATION;
+    /** @var PartialMatchRule */
+    public static $OBJ_PARTIAL_MATCH_RULE;
+    /** @var MatchStrategy */
+    public static $OBJ_MATCH_STRATEGY;
     /** @var Serializer */
     private static $serializer;
 
@@ -101,6 +112,10 @@ class JsonSerializeTest extends PHPUnit_Framework_TestCase
             ->setValue("malaise")
             ->setExclude(false);
 
+        self::$OBJ_SORT = new Sort();
+        self::$OBJ_SORT->setOrder(Sort\Order::Descending)
+            ->setField("price");
+
         self::$OBJ_NAVIGATION = new Navigation();
         self::$OBJ_NAVIGATION->setName("green")
             ->setDisplayName("GReeN")
@@ -108,10 +123,18 @@ class JsonSerializeTest extends PHPUnit_Framework_TestCase
             ->setOr(false)
             ->setType(Navigation\Type::Range_Date)
             ->setRange(true)
-            ->setSort(Navigation\Order::Value_Ascending)
+            ->setSort(self::$OBJ_SORT)
             ->setMetadata(array(self::$OBJ_METADATA))
             ->setRefinements(array(self::$OBJ_REFINEMENT_RANGE, self::$OBJ_REFINEMENT_VALUE))
             ->setMoreRefinements(true);
+
+        self::$OBJ_REFINEMENT_MATCH_VALUE = new RefinementMatch\Value();
+        self::$OBJ_REFINEMENT_MATCH_VALUE->setValue('adverb')
+            ->setCount(43);
+
+        self::$OBJ_REFINEMENT_MATCH = new RefinementMatch();
+        self::$OBJ_REFINEMENT_MATCH->setName('grapheme')
+            ->setValues(array(self::$OBJ_REFINEMENT_MATCH_VALUE));
 
         self::$OBJ_RECORD = new Record();
         self::$OBJ_RECORD->setId("fw90314jh289t")
@@ -122,7 +145,8 @@ class JsonSerializeTest extends PHPUnit_Framework_TestCase
                 "look" => "at",
                 "all" => "my",
                 "keys" => array("we", "are", "the", "values")
-            ));
+            ))
+            ->setRefinementMatches(array(self::$OBJ_REFINEMENT_MATCH));
 
         self::$OBJ_CONTENT_ZONE = new ContentZone();
         self::$OBJ_CONTENT_ZONE->setId("23425n89hr")
@@ -139,8 +163,8 @@ class JsonSerializeTest extends PHPUnit_Framework_TestCase
             ->setName("appalled")
             ->setRichContent("crestfallen");
 
-        self::$OBJ_RECORDS_ZONE = new RecordsZone();
-        self::$OBJ_RECORDS_ZONE->setId("1240jfw9s8")
+        self::$OBJ_RECORD_ZONE = new RecordZone();
+        self::$OBJ_RECORD_ZONE->setId("1240jfw9s8")
             ->setName("gorbachev")
             ->setRecords(array(self::$OBJ_RECORD));
 
@@ -148,18 +172,23 @@ class JsonSerializeTest extends PHPUnit_Framework_TestCase
         self::$OBJ_TEMPLATE->setId("fad87g114")
             ->setName("bulbous")
             ->setRuleName("carmageddon")
-            ->setZones(array(self::$OBJ_CONTENT_ZONE, self::$OBJ_RECORDS_ZONE));
+            ->setZones(array(self::$OBJ_CONTENT_ZONE, self::$OBJ_RECORD_ZONE));
 
         self::$OBJ_CUSTOM_URL_PARAM = new CustomUrlParam();
         self::$OBJ_CUSTOM_URL_PARAM->setKey("guava")->setValue("mango");
 
-        self::$OBJ_SORT = new Sort();
-        self::$OBJ_SORT->setOrder(Sort\Order::Descending)
-            ->setField("price");
-
         self::$OBJ_RESTRICT_NAVIGATION = new RestrictNavigation();
         self::$OBJ_RESTRICT_NAVIGATION->setCount(2)
             ->setName("categories");
+
+        self::$OBJ_PARTIAL_MATCH_RULE = new PartialMatchRule();
+        self::$OBJ_PARTIAL_MATCH_RULE->setMustMatch(4)
+            ->setTerms(2)
+            ->setTermsGreaterThan(45)
+            ->setPercentage(true);
+
+        self::$OBJ_MATCH_STRATEGY = new MatchStrategy();
+        self::$OBJ_MATCH_STRATEGY->setRules(array(self::$OBJ_PARTIAL_MATCH_RULE));
 
         self::$OBJ_REQUEST = new Request();
         self::$OBJ_REQUEST->clientKey = "adf7h8er7h2r";
@@ -173,40 +202,18 @@ class JsonSerializeTest extends PHPUnit_Framework_TestCase
         self::$OBJ_REQUEST->returnBinary = false;
         self::$OBJ_REQUEST->query = "cantaloupe";
         self::$OBJ_REQUEST->refinementQuery = "cranberry";
-        self::$OBJ_REQUEST->sort = self::$OBJ_SORT;
+        self::$OBJ_REQUEST->sort = array(self::$OBJ_SORT);
         self::$OBJ_REQUEST->fields = array("pineapple", "grape", "clementine");
         self::$OBJ_REQUEST->orFields = array("pumpernickel", "rye");
         self::$OBJ_REQUEST->refinements = array(self::$OBJ_REFINEMENT_RANGE, self::$OBJ_REFINEMENT_VALUE);
         self::$OBJ_REQUEST->customUrlParams = array(self::$OBJ_CUSTOM_URL_PARAM);
         self::$OBJ_REQUEST->wildcardSearchEnabled = true;
         self::$OBJ_REQUEST->restrictNavigation = self::$OBJ_RESTRICT_NAVIGATION;
+        self::$OBJ_REQUEST->matchStrategy = self::$OBJ_MATCH_STRATEGY;
 
         self::$OBJ_REFINEMENTS_REQUEST = new RefinementsRequest();
-        self::$OBJ_REFINEMENTS_REQUEST->clientKey = "adf7h8er7h2r";
-        self::$OBJ_REFINEMENTS_REQUEST->collection = "ducks";
-        self::$OBJ_REFINEMENTS_REQUEST->area = "surface";
-        self::$OBJ_REFINEMENTS_REQUEST->skip = 12;
-        self::$OBJ_REFINEMENTS_REQUEST->pageSize = 30;
-        self::$OBJ_REFINEMENTS_REQUEST->biasingProfile = "ballooning";
-        self::$OBJ_REFINEMENTS_REQUEST->language = "en";
-        self::$OBJ_REFINEMENTS_REQUEST->pruneRefinements = true;
-        self::$OBJ_REFINEMENTS_REQUEST->returnBinary = false;
-        self::$OBJ_REFINEMENTS_REQUEST->query = "cantaloupe";
-        self::$OBJ_REFINEMENTS_REQUEST->refinementQuery = "cranberry";
-        self::$OBJ_REFINEMENTS_REQUEST->sort = self::$OBJ_SORT;
-        self::$OBJ_REFINEMENTS_REQUEST->fields = array("pineapple", "grape", "clementine");
-        self::$OBJ_REFINEMENTS_REQUEST->orFields = array("pumpernickel", "rye");
-        self::$OBJ_REFINEMENTS_REQUEST->refinements = array(self::$OBJ_REFINEMENT_RANGE, self::$OBJ_REFINEMENT_VALUE);
-        self::$OBJ_REFINEMENTS_REQUEST->customUrlParams = array(self::$OBJ_CUSTOM_URL_PARAM);
-        self::$OBJ_REFINEMENTS_REQUEST->wildcardSearchEnabled = true;
-        self::$OBJ_REFINEMENTS_REQUEST->restrictNavigation = self::$OBJ_RESTRICT_NAVIGATION;
         self::$OBJ_REFINEMENTS_REQUEST->originalQuery = self::$OBJ_REQUEST;
         self::$OBJ_REFINEMENTS_REQUEST->navigationName = "height";
-    }
-
-    public function setUp()
-    {
-
     }
 
     public function testEncodePageInfo()
@@ -255,6 +262,18 @@ class JsonSerializeTest extends PHPUnit_Framework_TestCase
             $this->serialize(self::$OBJ_NAVIGATION));
     }
 
+    public function testEncodeRefinementMatchValue()
+    {
+        $this->assertJsonStringEqualsJsonString(JsonDeserializeTest::$JSON_REFINEMENT_MATCH_VALUE,
+            $this->serialize(self::$OBJ_REFINEMENT_MATCH_VALUE));
+    }
+
+    public function testEncodeRefinementMatch()
+    {
+        $this->assertJsonStringEqualsJsonString(JsonDeserializeTest::$JSON_REFINEMENT_MATCH,
+            $this->serialize(self::$OBJ_REFINEMENT_MATCH));
+    }
+
     public function testEncodeRecord()
     {
         $this->assertJsonStringEqualsJsonString(JsonDeserializeTest::$JSON_RECORD,
@@ -293,8 +312,8 @@ class JsonSerializeTest extends PHPUnit_Framework_TestCase
 
     public function testEncodeRecordsZone()
     {
-        $this->assertJsonStringEqualsJsonString(JsonDeserializeTest::$JSON_RECORDS_ZONE,
-            $this->serialize(self::$OBJ_RECORDS_ZONE));
+        $this->assertJsonStringEqualsJsonString(JsonDeserializeTest::$JSON_RECORD_ZONE,
+            $this->serialize(self::$OBJ_RECORD_ZONE));
     }
 
     public function testEncodeSort()
@@ -312,6 +331,18 @@ class JsonSerializeTest extends PHPUnit_Framework_TestCase
     {
         $this->assertJsonStringEqualsJsonString(JsonDeserializeTest::$JSON_RESTRICT_NAVIGATION,
             $this->serialize(self::$OBJ_RESTRICT_NAVIGATION));
+    }
+
+    public function testEncodePartialMatchRule()
+    {
+        $this->assertJsonStringEqualsJsonString(JsonDeserializeTest::$JSON_PARTIAL_MATCH_RULE,
+            $this->serialize(self::$OBJ_PARTIAL_MATCH_RULE));
+    }
+
+    public function testEncodeMatchStrategy()
+    {
+        $this->assertJsonStringEqualsJsonString(JsonDeserializeTest::$JSON_MATCH_STRATEGY,
+            $this->serialize(self::$OBJ_MATCH_STRATEGY));
     }
 
     public function testEncodeRequest()

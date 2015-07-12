@@ -17,7 +17,7 @@ use JMS\Serializer\Annotation as JMS;
 /**
  * @JMS\Discriminator(field = "type", map = {
  *  "Content": "GroupByInc\API\Model\ContentZone",
- *  "Record": "GroupByInc\API\Model\RecordsZone",
+ *  "Record": "GroupByInc\API\Model\RecordZone",
  *  "Banner": "GroupByInc\API\Model\BannerZone",
  *  "Rich_Content": "GroupByInc\API\Model\RichContentZone"
  * })

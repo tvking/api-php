@@ -2,19 +2,24 @@
 
 namespace GroupByInc\API;
 
+use GroupByInc\API\Model\CustomUrlParam;
+use GroupByInc\API\Model\MatchStrategy as MMatchStrategy;
 use GroupByInc\API\Model\Navigation;
+use GroupByInc\API\Model\PartialMatchRule as MPartialMatchRule;
 use GroupByInc\API\Model\Refinement;
 use GroupByInc\API\Model\Refinement\Type;
 use GroupByInc\API\Model\RefinementRange;
 use GroupByInc\API\Model\RefinementValue;
-use GroupByInc\API\Model\RestrictNavigation;
-use GroupByInc\API\Model\SelectedRefinement;
-use GroupByInc\API\Model\SelectedRefinementRange;
-use GroupByInc\API\Model\SelectedRefinementValue;
-use GroupByInc\API\Request\CustomUrlParam;
+use GroupByInc\API\Model\Sort as MSort;
+use GroupByInc\API\Request\MatchStrategy as RMatchStrategy;
+use GroupByInc\API\Request\PartialMatchRule as RPartialMatchRule;
 use GroupByInc\API\Request\RefinementsRequest;
 use GroupByInc\API\Request\Request;
-use GroupByInc\API\Request\Sort;
+use GroupByInc\API\Request\RestrictNavigation;
+use GroupByInc\API\Request\SelectedRefinement;
+use GroupByInc\API\Request\SelectedRefinementRange;
+use GroupByInc\API\Request\SelectedRefinementValue;
+use GroupByInc\API\Request\Sort as RSort;
 use GroupByInc\API\Util\SerializerFactory;
 use GroupByInc\API\Util\StringBuilder;
 use GroupByInc\API\Util\StringUtils;
@@ -48,7 +53,7 @@ class Query
     private $biasingProfile;
     /** @var string */
     private $language;
-    /** @var Sort */
+    /** @var MSort[] */
     private $sort;
     /** @var CustomUrlParam[] */
     private $customUrlParams = array();
@@ -129,7 +134,6 @@ class Query
         $request->area = $this->area;
         $request->collection = $this->collection;
         $request->query = $this->query;
-        $request->sort = $this->sort;
         $request->fields = $this->fields;
         $request->orFields = $this->orFields;
         $request->language = $this->language;
@@ -153,6 +157,12 @@ class Query
         $wildcardSearchEnabled = $this->wildcardSearchEnabled;
         if (isset($wildcardSearchEnabled) && $wildcardSearchEnabled === true) {
             $request->wildcardSearchEnabled = true;
+        }
+
+        if (!empty($this->sort)) {
+            foreach ($this->sort as $s) {
+                array_push($request->sort, $this->convertSort($s));
+            }
         }
 
 //        $returnBinary = $this->returnBinary;
@@ -344,16 +354,6 @@ class Query
     }
 
     /**
-     * @param string $field The field to sort on.
-     * @param int    $order The sort order.
-     */
-    public function setSortByField($field, $order)
-    {
-        $sort = new Sort();
-        $this->setSort($sort->setField($field)->setOrder($order));
-    }
-
-    /**
      * @param string $name  The parameter name.
      * @param string $value The parameter value.
      */
@@ -371,9 +371,10 @@ class Query
         array_push($this->customUrlParams, $param);
     }
 
-    public function splitRefinements($refinementString) {
-        if(StringUtils::isNotBlank($refinementString)) {
-            return preg_split(self::TILDE_REGEX, $refinementString, -1, PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
+    public function splitRefinements($refinementString)
+    {
+        if (StringUtils::isNotBlank($refinementString)) {
+            return preg_split(self::TILDE_REGEX, $refinementString, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
         }
         return [];
     }
@@ -405,8 +406,7 @@ class Query
                     $value = explode(Symbol::DOUBLE_DOT, $nameValue[1]);
                     $refinement->setLow($value[0]);
                     $refinement->setHigh("");
-                    //starts with ..
-                } else if (substr($nameValue[1], 0, 2) == Symbol::DOUBLE_DOT) {
+                } else if (StringUtils::startsWith($nameValue[1], Symbol::DOUBLE_DOT)) {
                     $refinement->setLow("");
                     $value = explode(Symbol::DOUBLE_DOT, $nameValue[1]);
                     $refinement->setHigh($value[1]);
@@ -435,7 +435,7 @@ class Query
         $navigation = null;
         if (array_key_exists($navigationName, $this->navigations)) {
             $navigation = $this->navigations[$navigationName];
-        } else if ($navigation == null) {
+        } else {
             $navigation = new Navigation();
             $navigation->setName($navigationName)->setRange($refinement instanceof SelectedRefinementRange);
             $this->navigations[$navigationName] = $navigation;
@@ -485,15 +485,15 @@ class Query
     }
 
     /**
-     * @return Sort The current sort parameter.
+     * @return MSort[] The current list of sort parameters.
      */
-    public function getSort()
+    public function &getSort()
     {
         return $this->sort;
     }
 
     /**
-     * @param Sort $sort A Sort object representing the field and order.
+     * @param MSort[] $sort Any number of sort criteria.
      */
     public function setSort($sort)
     {
@@ -696,6 +696,72 @@ class Query
             }
         }
         return null;
+    }
+
+    /**
+     * @param MSort $sort
+     *
+     * @return RSort
+     */
+    protected static function convertSort($sort)
+    {
+        /** @var RSort $convertedSort */
+        $convertedSort = null;
+        if (!empty($sort)) {
+            $convertedSort = new RSort();
+            $convertedSort->setField($sort->getField());
+            switch ($sort->getOrder()) {
+                case MSort\Order::Ascending:
+                    $convertedSort->setOrder(RSort\Order::Ascending);
+                    break;
+                case MSort\Order::Descending:
+                    $convertedSort->setOrder(RSort\Order::Descending);
+                    break;
+            }
+        }
+        return $convertedSort;
+    }
+
+    /**
+     * @param MMatchStrategy $strategy
+     *
+     * @return RMatchStrategy
+     */
+    protected static function convertPartialMatchStrategy($strategy)
+    {
+        /** @var RMatchStrategy $convertedStrategy */
+        $convertedStrategy = null;
+        if (!empty($strategy)) {
+            $rules = $strategy->getRules();
+            if (!empty($rules)) {
+                $convertedStrategy = new RMatchStrategy();
+                /** @var MPartialMatchRule $r */
+                foreach ($rules as $r) {
+                    array_push($rules, Query::convertPartialMatchRule($r));
+                }
+                $strategy->setRules($rules);
+            }
+        }
+        return $convertedStrategy;
+    }
+
+    /**
+     * @param MPartialMatchRule $rule
+     *
+     * @return RPartialMatchRule
+     */
+    protected static function convertPartialMatchRule($rule)
+    {
+        /** @var RPartialMatchRule $convertedRule */
+        $convertedRule = null;
+        if (!empty($rule)) {
+            $convertedRule = new RPartialMatchRule();
+            $convertedRule->setTerms($rule->getTerms())
+                ->setTermsGreaterThan($rule->getTermsGreaterThan())
+                ->setMustMatch($rule->getMustMatch())
+                ->setPercentage($rule->isPercentage());
+        }
+        return $convertedRule;
     }
 
 }

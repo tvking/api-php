@@ -1,13 +1,13 @@
 <?php
 
-namespace GroupByInc\API\Request;
+namespace GroupByInc\API\Model;
 
 class CustomUrlParam
 {
     /** @var string */
-    private $key;
+    public $key;
     /** @var string */
-    private $value;
+    public $value;
 
     /**
      * @return string

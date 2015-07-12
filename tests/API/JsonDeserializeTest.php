@@ -10,15 +10,15 @@ use GroupByInc\API\Model\Metadata;
 use GroupByInc\API\Model\Navigation;
 use GroupByInc\API\Model\PageInfo;
 use GroupByInc\API\Model\Record;
-use GroupByInc\API\Model\RecordsZone;
+use GroupByInc\API\Model\RecordZone;
+use GroupByInc\API\Model\RefinementMatch;
 use GroupByInc\API\Model\RefinementRange;
 use GroupByInc\API\Model\RefinementsResult;
 use GroupByInc\API\Model\RefinementValue;
-use GroupByInc\API\Model\RestrictNavigation;
 use GroupByInc\API\Model\Results;
 use GroupByInc\API\Model\RichContentZone;
-use GroupByInc\API\Model\SelectedRefinement;
 use GroupByInc\API\Model\Template;
+use GroupByInc\API\Request\RestrictNavigation;
 use GroupByInc\API\Util\SerializerFactory;
 use JMS\Serializer\Serializer;
 
@@ -28,7 +28,7 @@ class JsonDeserializeTest extends PHPUnit_Framework_TestCase
     public static $JSON_CONTENT_ZONE = '{"content":"mushy","_id":"23425n89hr","name":"porcelain","type":"Content"}';
     public static $JSON_BANNER_ZONE = '{"content":"man","_id":"asf0j2380jf","name":"vitruvian","type":"Banner"}';
     public static $JSON_CLUSTER_RECORD = '{"title":"fubar","url":"example.com","snippet":"itty bit"}';
-    public static $JSON_RECORD = '{"_id":"fw90314jh289t","_u":"exemplar.com","_snippet":"Curator","_t":"Periwinkle","allMeta":{"look":"at","all":"my","keys":["we","are","the","values"]}}';
+    public static $JSON_REFINEMENT_MATCH_VALUE = '{"value":"adverb","count":43}';
     public static $JSON_METADATA = '{"key":"orange","value":"apple"}';
     public static $JSON_REFINEMENT_VALUE = '{"_id":"fadfs89y10j","count":987,"type":"Value","value":"malaise","exclude":false}';
     public static $JSON_REFINEMENT_RANGE = '{"high":"delicious","low":"atrocious","_id":"342h9582hh4","count":14,"type":"Range","exclude":true}';
@@ -36,10 +36,14 @@ class JsonDeserializeTest extends PHPUnit_Framework_TestCase
     public static $JSON_RESTRICT_NAVIGATION = '{"name":"categories","count":2}';
     public static $JSON_CUSTOM_URL_PARAM = '{"key":"guava","value":"mango"}';
     public static $JSON_SORT = '{"field":"price","order":"Descending"}';
-    public static $JSON_RECORDS_ZONE;
+    public static $JSON_PARTIAL_MATCH_RULE = '{"terms":2,"termsGreaterThan":45,"mustMatch":4,"percentage":true}';
+    public static $JSON_REFINEMENT_MATCH;
+    public static $JSON_RECORD;
+    public static $JSON_RECORD_ZONE;
     public static $JSON_TEMPLATE;
     public static $JSON_CLUSTER;
     public static $JSON_NAVIGATION;
+    public static $JSON_MATCH_STRATEGY;
     public static $JSON_REQUEST;
     /** @var Serializer */
     private static $serializer;
@@ -51,27 +55,35 @@ class JsonDeserializeTest extends PHPUnit_Framework_TestCase
 
     public static function init()
     {
-        self::$JSON_RECORDS_ZONE = '{"records":[' . self::$JSON_RECORD .
-            '],"_id":"1240jfw9s8","name":"gorbachev","type":"Record"}';
+        self::$JSON_REFINEMENT_MATCH = '{"name":"grapheme","values":[' . self::$JSON_REFINEMENT_MATCH_VALUE . ']}';
+
+        self::$JSON_RECORD = '{"_id":"fw90314jh289t","_u":"exemplar.com","_snippet":"Curator","_t":"Periwinkle",' .
+            '"allMeta":{"look":"at","all":"my","keys":["we","are","the","values"]},"refinementMatches":[' .
+            self::$JSON_REFINEMENT_MATCH . ']}';
+
+        self::$JSON_RECORD_ZONE = '{"records":[' . self::$JSON_RECORD . '],"_id":"1240jfw9s8",' .
+            '"name":"gorbachev","type":"Record"}';
 
         self::$JSON_TEMPLATE = '{"_id":"fad87g114","name":"bulbous","ruleName":"carmageddon",' .
-            '"zones":[' . self::$JSON_CONTENT_ZONE . ',' . self::$JSON_RECORDS_ZONE . ']}';
+            '"zones":[' . self::$JSON_CONTENT_ZONE . ',' . self::$JSON_RECORD_ZONE . ']}';
 
         self::$JSON_CLUSTER = '{"term":"some","records":[' . self::$JSON_CLUSTER_RECORD . ']}';
 
         self::$JSON_NAVIGATION = '{"_id":"081h29n81f","name":"green","displayName":"GReeN",' .
-            '"range":true,"or":false,"type":"Range_Date","sort":"Value_Ascending","refinements":[' .
+            '"range":true,"or":false,"type":"Range_Date","sort":' . self::$JSON_SORT . ',"refinements":[' .
             self::$JSON_REFINEMENT_RANGE . ',' . self::$JSON_REFINEMENT_VALUE .
             '],"metadata":[' . self::$JSON_METADATA . '],"moreRefinements":true}';
+
+        self::$JSON_MATCH_STRATEGY = '{"rules":[' . self::$JSON_PARTIAL_MATCH_RULE . ']}';
 
         self::$JSON_REQUEST = '{"clientKey":"adf7h8er7h2r","collection":"ducks",' .
             '"area":"surface","skip":12,"pageSize":30,"biasingProfile":"ballooning","language":"en",' .
             '"pruneRefinements":true,"returnBinary":false,"query":"cantaloupe",' .
-            '"sort":' . self::$JSON_SORT . ',"fields":["pineapple","grape","clementine"],' .
+            '"sort":[' . self::$JSON_SORT . '],"fields":["pineapple","grape","clementine"],' .
             '"orFields":["pumpernickel","rye"],"refinements":[' . self::$JSON_REFINEMENT_RANGE . ',' .
             self::$JSON_REFINEMENT_VALUE . '],' . '"customUrlParams":[' . self::$JSON_CUSTOM_URL_PARAM .
             '],' . '"restrictNavigation":' . self::$JSON_RESTRICT_NAVIGATION . ',"refinementQuery":"cranberry",' .
-            '"wildcardSearchEnabled":true}';
+            '"wildcardSearchEnabled":true,"matchStrategy":' . self::$JSON_MATCH_STRATEGY . '}';
     }
 
     public function testDeserializeRefinementRange()
@@ -121,6 +133,21 @@ class JsonDeserializeTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(JsonSerializeTest::$OBJ_CLUSTER, $cluster);
     }
 
+    public function testDeserializeRefinementMatchValue()
+    {
+        /** @var RefinementMatch\Value $refinementMatchValue */
+        $refinementMatchValue = $this->deserialize(self::$JSON_REFINEMENT_MATCH_VALUE,
+            'GroupByInc\API\Model\RefinementMatch\Value');
+        $this->assertEquals(JsonSerializeTest::$OBJ_REFINEMENT_MATCH_VALUE, $refinementMatchValue);
+    }
+
+    public function testDeserializeRefinementMatch()
+    {
+        /** @var RefinementMatch $refinementMatch */
+        $refinementMatch = $this->deserialize(self::$JSON_REFINEMENT_MATCH, 'GroupByInc\API\Model\RefinementMatch');
+        $this->assertEquals(JsonSerializeTest::$OBJ_REFINEMENT_MATCH, $refinementMatch);
+    }
+
     public function testDeserializeRecord()
     {
         /** @var Record $record */
@@ -146,9 +173,9 @@ class JsonDeserializeTest extends PHPUnit_Framework_TestCase
 
     public function testDeserializeRecordsZone()
     {
-        /** @var RecordsZone $recordsZone */
-        $recordsZone = $this->deserialize(self::$JSON_RECORDS_ZONE, 'GroupByInc\API\Model\RecordsZone');
-        $this->assertEquals(JsonSerializeTest::$OBJ_RECORDS_ZONE, $recordsZone);
+        /** @var RecordZone $recordZone */
+        $recordZone = $this->deserialize(self::$JSON_RECORD_ZONE, 'GroupByInc\API\Model\RecordZone');
+        $this->assertEquals(JsonSerializeTest::$OBJ_RECORD_ZONE, $recordZone);
     }
 
     public function testDeserializeBannerZone()
@@ -175,7 +202,7 @@ class JsonDeserializeTest extends PHPUnit_Framework_TestCase
     public function testDeserializeRestrictNavigation()
     {
         /** @var RestrictNavigation $restrictNavigation */
-        $restrictNavigation = $this->deserialize(self::$JSON_RESTRICT_NAVIGATION, 'GroupByInc\API\Model\RestrictNavigation');
+        $restrictNavigation = $this->deserialize(self::$JSON_RESTRICT_NAVIGATION, 'GroupByInc\API\Request\RestrictNavigation');
         $this->assertEquals(JsonSerializeTest::$OBJ_RESTRICT_NAVIGATION, $restrictNavigation);
     }
 

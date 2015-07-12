@@ -14,12 +14,12 @@ class BannerZone extends AbstractContentZone
 
     /**
      * @param string $bannerUrl
+     *
      * @return BannerZone
      */
     public function setBannerUrl($bannerUrl)
     {
-        $this->setContent($bannerUrl);
-        return $this;
+        return $this->setContent($bannerUrl);
     }
 
     /**

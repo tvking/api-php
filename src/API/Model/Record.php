@@ -35,6 +35,12 @@ class Record
      * @JMS\Type("array")
      */
     public $allMeta = array();
+    /**
+     * @var RefinementMatch[]
+     * @JMS\Type("array<GroupByInc\API\Model\RefinementMatch>")
+     */
+    public $refinementMatches = array();
+
 
     /**
      * @return string The ID is generated from URL of this record which means it will persist across updates.
@@ -46,6 +52,7 @@ class Record
 
     /**
      * @param string $id Set the ID.
+     *
      * @return Record
      */
     public function setId($id)
@@ -64,6 +71,7 @@ class Record
 
     /**
      * @param string $url Set the record URL.
+     *
      * @return Record
      */
     public function setUrl($url)
@@ -82,6 +90,7 @@ class Record
 
     /**
      * @param string $snippet Set the snippet
+     *
      * @return Record
      */
     public function setSnippet($snippet)
@@ -93,6 +102,7 @@ class Record
     /**
      * @param string $name Get a specific metadata value.
      *                     Essentially this represents an attribute of the record data.
+     *
      * @return object The requested metadata value.
      */
     public function getMetaValue($name)
@@ -110,6 +120,7 @@ class Record
 
     /**
      * @param object[] $allMeta Set the metadata.
+     *
      * @return Record
      */
     public function setAllMeta($allMeta)
@@ -128,11 +139,31 @@ class Record
 
     /**
      * @param string $title Set the title.
+     *
      * @return Record
      */
     public function setTitle($title)
     {
         $this->title = $title;
+        return $this;
+    }
+
+    /**
+     * @return RefinementMatch[]
+     */
+    public function getRefinementMatches()
+    {
+        return $this->refinementMatches;
+    }
+
+    /**
+     * @param RefinementMatch[] $refinementMatches
+     *
+     * @return Record
+     */
+    public function setRefinementMatches($refinementMatches)
+    {
+        $this->refinementMatches = $refinementMatches;
         return $this;
     }
 

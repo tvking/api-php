@@ -1,7 +1,7 @@
 <?php
 use GroupByInc\API\Model\Navigation;
-use GroupByInc\API\Model\SelectedRefinementRange;
-use GroupByInc\API\Model\SelectedRefinementValue;
+use GroupByInc\API\Request\SelectedRefinementRange;
+use GroupByInc\API\Request\SelectedRefinementValue;
 use GroupByInc\API\Url\UrlBeautifier;
 use GroupByInc\API\Url\UrlFunctions;
 

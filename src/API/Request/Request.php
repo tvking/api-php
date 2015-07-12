@@ -2,9 +2,8 @@
 
 namespace GroupByInc\API\Request;
 
+use GroupByInc\API\Model\CustomUrlParam;
 use GroupByInc\API\Model\Navigation;
-use GroupByInc\API\Model\RestrictNavigation;
-use GroupByInc\API\Model\SelectedRefinement;
 
 class Request
 {
@@ -22,9 +21,13 @@ class Request
     public $query;
     /** @var string */
     public $refinementQuery;
-    /** @var Sort */
-    public $sort;
+    /** @var RestrictNavigation */
+    public $restrictNavigation;
+    /** @var MatchStrategy */
+    public $matchStrategy;
 
+    /** @var Sort[] */
+    public $sort = array();
     /** @var string[] */
     public $fields = array();
     /** @var string[] */
@@ -43,9 +46,7 @@ class Request
     /** @var bool */
     public $disableAutocorrection;
     /** @var bool */
-    public $pruneRefinements;
+    public $pruneRefinements = true;
     /** @var bool */
-    public $wildcardSearchEnabled;
-    /** @var RestrictNavigation */
-    public $restrictNavigation;
+    public $wildcardSearchEnabled = false;
 }

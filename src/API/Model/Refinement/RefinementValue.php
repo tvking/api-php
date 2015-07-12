@@ -31,11 +31,6 @@ class RefinementValue extends Refinement
         return $this;
     }
 
-    public function isRange()
-    {
-        return false;
-    }
-
     public function toTildeString()
     {
         return "=" . $this->value;

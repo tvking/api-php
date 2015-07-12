@@ -15,7 +15,7 @@ class CloudBridgeTest extends PHPUnit_Framework_TestCase
     const REFINEMENT_SEARCH_URL = 'https://testdomain.groupbycloud.com:443/api/v1/search/refinements';
     const HEADERS = "Status 200\r\nContent-Type:application/json\n";
     // Must match expected bridge json
-    const TEST_QUERY = '{"clientKey":"randomkey","fields":[],"orFields":[],"refinements":[],"customUrlParams":[],"skip":0,"pageSize":10}';
+    const TEST_QUERY = '{"clientKey":"randomkey","sort":[],"fields":[],"orFields":[],"refinements":[],"customUrlParams":[],"skip":0,"pageSize":10,"pruneRefinements":true,"wildcardSearchEnabled":false}';
     const TEST_RESPONSE = '{"query":"foobar","pageInfo":{"recordStart":14,"recordEnd":23}}';
 
     public function testErroneousStatusCode()

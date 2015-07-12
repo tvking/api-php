@@ -35,7 +35,7 @@ abstract class Refinement
      * @var bool
      * @JMS\Type("boolean")
      */
-    public $exclude;
+    public $exclude = false;
 
     /**
      * @return string The ID is a MD5 of the name and value of the refinement.
@@ -47,6 +47,7 @@ abstract class Refinement
 
     /**
      * @param string $id Set the ID.
+     *
      * @return $this
      */
     public function setId($id)
@@ -65,6 +66,7 @@ abstract class Refinement
 
     /**
      * @param int $count Set the count.
+     *
      * @return $this
      */
     public function setCount($count)
@@ -83,6 +85,7 @@ abstract class Refinement
 
     /**
      * @param boolean $exclude
+     *
      * @return $this
      */
     public function setExclude($exclude)
@@ -92,14 +95,17 @@ abstract class Refinement
     }
 
     /**
+     * @return bool True if this is a Range Refinement.
+     */
+    public function isRange()
+    {
+        return $this->getType() === Refinement\Type::Range;
+    }
+
+    /**
      * @return string The type of refinement;
      */
     public abstract function getType();
-
-    /**
-     * @return bool True if this is a Range Refinement.
-     */
-    public abstract function isRange();
 
     /**
      * @return string A string representation of the Refinement.

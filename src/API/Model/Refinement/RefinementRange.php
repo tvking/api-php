@@ -54,11 +54,6 @@ class RefinementRange extends Refinement
         return $this;
     }
 
-    public function isRange()
-    {
-        return true;
-    }
-
     public function toTildeString()
     {
         return ":" . $this->low . ".." . $this->high;
