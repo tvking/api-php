@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/JsonSerializeTest.php';
+require_once __DIR__ . '/Expectation/Object.php';
 
 use GroupByInc\API\Query;
 use GroupByInc\API\Model\Sort;
@@ -42,8 +42,8 @@ class QueryTest extends PHPUnit_Framework_TestCase
         $query->setLanguage('en');
         $query->setPruneRefinements(false);
         $query->setDisableAutocorrection(true);
-        $query->setCustomUrlParams(array(JsonSerializeTest::$OBJ_CUSTOM_URL_PARAM));
-        $query->setNavigations(array(JsonSerializeTest::$OBJ_NAVIGATION));
+        $query->setCustomUrlParams(array(Object::$CUSTOM_URL_PARAM));
+        $query->setNavigations(array(Object::$NAVIGATION));
         $query->addFields(array("brand", "category", "height"));
         $query->addOrFields(array("price", "color"));
         $query->setWildcardSearchEnabled(true);
@@ -65,8 +65,8 @@ class QueryTest extends PHPUnit_Framework_TestCase
         $query->setLanguage('en');
         $query->setPruneRefinements(false);
         $query->setDisableAutocorrection(true);
-        $query->setCustomUrlParams(array(JsonSerializeTest::$OBJ_CUSTOM_URL_PARAM));
-        $query->setNavigations(array(JsonSerializeTest::$OBJ_NAVIGATION));
+        $query->setCustomUrlParams(array(Object::$CUSTOM_URL_PARAM));
+        $query->setNavigations(array(Object::$NAVIGATION));
         $query->addFields(array("brand", "category", "height"));
         $query->addOrFields(array("price", "color"));
         $query->setWildcardSearchEnabled(true);
