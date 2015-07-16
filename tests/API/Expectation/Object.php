@@ -212,12 +212,15 @@ class Object
 
         self::$RESULTS = new Results();
         self::$RESULTS->setArea("christmas");
+        self::$RESULTS->setBiasingProfile("unbiased");
         self::$RESULTS->setClusters(array(Object::$CLUSTER));
         self::$RESULTS->setAvailableNavigation(array(Object::$NAVIGATION));
         self::$RESULTS->setDidYouMean(array("square", "skewer"));
         self::$RESULTS->setErrors("criminey!");
         self::$RESULTS->setPageInfo(Object::$PAGE_INFO);
         self::$RESULTS->setQuery("skwuare");
+        self::$RESULTS->setOriginalQuery("skwuare---");
+        self::$RESULTS->setCorrectedQuery("square");
         self::$RESULTS->setRecords(array(Object::$RECORD));
         self::$RESULTS->setRedirect("/to/the/moon.html");
         self::$RESULTS->setSelectedNavigation(array(Object::$NAVIGATION));

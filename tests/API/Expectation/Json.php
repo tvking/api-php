@@ -68,7 +68,7 @@ class Json
             '"siteParams":[' . self::$METADATA . '],"rewrites":["Synonym","Antonym","Homonym"],' .
             '"pageInfo":' . self::$PAGE_INFO . ',"template":' . self::$TEMPLATE . ',' .
             '"redirect":"/to/the/moon.html","errors":"criminey!","query":"skwuare","area":"christmas",' .
-            '"totalRecordCount":34}';
+            '"totalRecordCount":34,"biasingProfile":"unbiased","originalQuery":"skwuare---","correctedQuery":"square"}';
 
         self::$REFINEMENT_RESULTS = '{"errors":"Could not load","navigation":' . self::$NAVIGATION . '}';
     }
