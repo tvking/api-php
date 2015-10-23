@@ -1,9 +1,11 @@
 <?php
 
+use GroupByInc\API\AbstractBridge;
 use GroupByInc\API\CloudBridge;
 use GroupByInc\API\Model\RefinementsResult;
 use GroupByInc\API\Model\Results;
 use GroupByInc\API\Query;
+use GroupByInc\API\Util\StringUtils;
 use Httpful\Request;
 use Httpful\Response;
 
@@ -21,7 +23,7 @@ class CloudBridgeTest extends PHPUnit_Framework_TestCase
     public function testErroneousStatusCode()
     {
         $bridge = Phake::partialMock('GroupByInc\API\CloudBridge', self::CLIENT_KEY, self::DOMAIN);
-        Phake::when($bridge)->execute(self::SEARCH_URL, self::TEST_QUERY)
+        Phake::when($bridge)->execute(self::SEARCH_URL, self::TEST_QUERY, 0)
             ->thenReturn(new Response('{"foo":"bar"}', 'Status 400', Request::post('')));
 
         $query = new Query();
@@ -40,7 +42,7 @@ class CloudBridgeTest extends PHPUnit_Framework_TestCase
     public function testErrorOnReturnBinary()
     {
         $bridge = Phake::partialMock('GroupByInc\API\CloudBridge', self::CLIENT_KEY, self::DOMAIN);
-        Phake::when($bridge)->execute(self::SEARCH_URL, self::TEST_QUERY)
+        Phake::when($bridge)->execute(self::SEARCH_URL, self::TEST_QUERY, 0)
             ->thenReturn(new Response('{"foo":"bar"}', "Status 200\r\nContent-Type:application/bson\n", Request::post('')));
 
         $query = new Query();
@@ -56,7 +58,7 @@ class CloudBridgeTest extends PHPUnit_Framework_TestCase
     public function testSearch()
     {
         $bridge = Phake::partialMock('GroupByInc\API\CloudBridge', self::CLIENT_KEY, self::DOMAIN);
-        Phake::when($bridge)->execute(self::SEARCH_URL, self::TEST_QUERY)
+        Phake::when($bridge)->execute(self::SEARCH_URL, self::TEST_QUERY, 0)
             ->thenReturn(new Response(self::TEST_RESPONSE, self::HEADERS, Request::post('')));
 
         $query = new Query();
@@ -69,7 +71,7 @@ class CloudBridgeTest extends PHPUnit_Framework_TestCase
     public function testSearchCompressedResponse()
     {
         $bridge = Phake::partialMock('GroupByInc\API\CloudBridge', self::CLIENT_KEY, self::DOMAIN);
-        Phake::when($bridge)->execute(self::SEARCH_URL, self::TEST_QUERY)
+        Phake::when($bridge)->execute(self::SEARCH_URL, self::TEST_QUERY, 0)
             ->thenReturn(new Response(self::TEST_RESPONSE, self::HEADERS . "Content-Encoding:gzip\n", Request::post('')));
 
         $query = new Query();
@@ -83,7 +85,7 @@ class CloudBridgeTest extends PHPUnit_Framework_TestCase
     {
         $refinementsQuery = '{"originalQuery":' . self::TEST_QUERY . ',"navigationName":"height"}';
         $bridge = Phake::partialMock('GroupByInc\API\CloudBridge', self::CLIENT_KEY, self::DOMAIN);
-        Phake::when($bridge)->execute(self::REFINEMENT_SEARCH_URL, $refinementsQuery)
+        Phake::when($bridge)->execute(self::REFINEMENT_SEARCH_URL, $refinementsQuery, 0)
             ->thenReturn(new Response('{"navigation":{"name":"foobar"}}', self::HEADERS, Request::post('')));
 
         $query = new Query();
@@ -91,6 +93,43 @@ class CloudBridgeTest extends PHPUnit_Framework_TestCase
         /** @var RefinementsResult $results */
         $results = $bridge->refinements($query, "height");
         $this->assertEquals('foobar', $results->getNavigation()->getName());
+    }
+
+    public function testMultipleFailingCalls()
+    {
+        $bridge = Phake::partialMock('GroupByInc\API\CloudBridge', self::CLIENT_KEY, self::DOMAIN);
+        Phake::when($bridge)->execute(self::SEARCH_URL, self::TEST_QUERY, 0)
+            ->thenThrow(new Exception('the request failed!'));
+        Phake::when($bridge)->execute(self::SEARCH_URL, self::TEST_QUERY, 1)
+            ->thenThrow(new Exception('the request failed!'));
+        Phake::when($bridge)->execute(self::SEARCH_URL, self::TEST_QUERY, 2)
+            ->thenThrow(new Exception('the request failed!'));
+
+        $query = new Query();
+        /** @var CloudBridge $bridge */
+        try {
+            $bridge->search($query);
+            $this->fail('expected a "retry failed" exceptions but got none');
+        } catch (Exception $e) {
+            $this->assertTrue(StringUtils::endsWith($e->getMessage(), 'failed after ' . AbstractBridge::MAX_TRIES . ' tries'));
+        }
+    }
+
+    public function testSomeFailingCalls()
+    {
+        $bridge = Phake::partialMock('GroupByInc\API\CloudBridge', self::CLIENT_KEY, self::DOMAIN);
+        Phake::when($bridge)->execute(self::SEARCH_URL, self::TEST_QUERY, 0)
+            ->thenThrow(new Exception('the request failed!'));
+        Phake::when($bridge)->execute(self::SEARCH_URL, self::TEST_QUERY, 1)
+            ->thenThrow(new Exception('the request failed!'));
+        Phake::when($bridge)->execute(self::SEARCH_URL, self::TEST_QUERY, 2)
+            ->thenReturn(new Response(self::TEST_RESPONSE, self::HEADERS, Request::post('')));
+
+        $query = new Query();
+        /** @var CloudBridge $bridge */
+        /** @var Results $results */
+        $results = $bridge->search($query);
+        $this->assertNotNull($results);
     }
 
 //    public function testClusterSearch()
