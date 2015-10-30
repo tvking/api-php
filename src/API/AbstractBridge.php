@@ -2,7 +2,9 @@
 
 namespace GroupByInc\API;
 
+use Exception;
 use GroupByInc\API\Util\SerializerFactory;
+use GroupByInc\API\Util\UriBuilder;
 use Httpful\Mime;
 use Httpful\Request;
 use Httpful\Response;
@@ -19,6 +21,8 @@ abstract class AbstractBridge
     const HTTP = 'http://';
     const HTTPS = 'https://';
     const COLON = ':';
+    const MAX_TRIES = 3;
+    const RETRY_TIMEOUT = 80000;
 
     /** @var string */
     private $clientKey;
@@ -79,7 +83,25 @@ abstract class AbstractBridge
      */
     private function query($url, $content, $class)
     {
-        $response = $this->execute($url, $content);
+        $response = null;
+        $tries = 0;
+        $lastError = null;
+
+        while ($tries < self::MAX_TRIES) {
+            try {
+                $response = $this->execute($url, $content, $tries);
+                break;
+            } catch (Exception $e) {
+                usleep(self::RETRY_TIMEOUT);
+                error_log('Connection failed, retrying');
+                $lastError = $e;
+                $tries++;
+            }
+        }
+
+        if ($tries == self::MAX_TRIES) {
+            throw new RuntimeException("Error: call to URL $url failed after " . self::MAX_TRIES . " tries", 0, $lastError);
+        }
 
         if ($response->hasErrors()) {
             throw new RuntimeException("Error: call to URL $url failed with status $response->code, response $response");
@@ -100,14 +122,15 @@ abstract class AbstractBridge
     /**
      * @param string $url
      * @param string $content
+     * @param int    $tries
      *
      * @return Response
      */
-    protected function execute($url, $content)
+    protected function execute($url, $content, $tries)
     {
-        echo $content;
+        echo "sending request $content to $url";
 
-        return Request::post($url)
+        return Request::post($url . "?retry=$tries")
             ->body($content)
             ->sendsType(Mime::JSON)
             ->send();
@@ -136,7 +159,7 @@ abstract class AbstractBridge
         try {
             $object = $this->serializer->deserialize($json, $class, 'json');
         } catch (RuntimeException $e) {
-            // should do something here
+            error_log("deserialization failed with exception $e");
         }
         return $object;
     }
