@@ -2,9 +2,9 @@
 
 class Json
 {
-    public static $RICH_CONTENT_ZONE = '{"content":"crestfallen","_id":"f90j1e1rf","name":"appalled","type":"Rich_Content"}';
+    public static $RICH_CONTENT_ZONE = '{"richContent":"crestfallen","_id":"f90j1e1rf","name":"appalled","type":"Rich_Content"}';
     public static $CONTENT_ZONE = '{"content":"mushy","_id":"23425n89hr","name":"porcelain","type":"Content"}';
-    public static $BANNER_ZONE = '{"content":"man","_id":"asf0j2380jf","name":"vitruvian","type":"Banner"}';
+    public static $BANNER_ZONE = '{"bannerUrl":"man","_id":"asf0j2380jf","name":"vitruvian","type":"Banner"}';
     public static $CLUSTER_RECORD = '{"title":"fubar","url":"example.com","snippet":"itty bit"}';
     public static $REFINEMENT_MATCH_VALUE = '{"value":"adverb","count":43}';
     public static $METADATA = '{"key":"orange","value":"apple"}';
@@ -35,7 +35,7 @@ class Json
             '"allMeta":{"look":"at","all":"my","keys":["we","are","the","values"]},"refinementMatches":[' .
             self::$REFINEMENT_MATCH . ']}';
 
-        self::$RECORD_ZONE = '{"records":[' . self::$RECORD . '],"_id":"1240jfw9s8",' .
+        self::$RECORD_ZONE = '{"records":[' . self::$RECORD . '],"query":"searchTerms","_id":"1240jfw9s8",' .
             '"name":"gorbachev","type":"Record"}';
 
         self::$TEMPLATE = '{"_id":"fad87g114","name":"bulbous","ruleName":"carmageddon",' .

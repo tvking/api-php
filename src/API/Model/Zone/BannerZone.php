@@ -2,24 +2,33 @@
 
 namespace GroupByInc\API\Model;
 
-class BannerZone extends AbstractContentZone
+use JMS\Serializer\Annotation as JMS;
+
+class BannerZone extends Zone
 {
     /**
-     * @return string
+     * @var string
+     * @JMS\Type("string")
+     */
+    public $bannerUrl;
+
+    /**
+     * @return string The value set by the merchandiser.
      */
     public function getBannerUrl()
     {
-        return $this->getContent();
+        return $this->bannerUrl;
     }
 
     /**
-     * @param string $bannerUrl
+     * @param string $bannerUrl Set the banner url.
      *
      * @return BannerZone
      */
     public function setBannerUrl($bannerUrl)
     {
-        return $this->setContent($bannerUrl);
+        $this->bannerUrl = $bannerUrl;
+        return $this;
     }
 
     /**
