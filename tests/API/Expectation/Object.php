@@ -161,6 +161,7 @@ class Object
         self::$RECORD_ZONE = new RecordZone();
         self::$RECORD_ZONE->setId("1240jfw9s8")
             ->setName("gorbachev")
+            ->setQuery("searchTerms")
             ->setRecords(array(self::$RECORD));
 
         self::$TEMPLATE = new Template();

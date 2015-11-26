@@ -2,7 +2,6 @@
 
 namespace GroupByInc\API\Model;
 
-use GroupByInc\API\Model\Zone\Type;
 use JMS\Serializer\Annotation as JMS;
 
 class RecordZone extends Zone

@@ -2,24 +2,33 @@
 
 namespace GroupByInc\API\Model;
 
-class RichContentZone extends AbstractContentZone
+use JMS\Serializer\Annotation as JMS;
+
+class RichContentZone extends Zone
 {
     /**
-     * @return string
+     * @var string
+     * @JMS\Type("string")
+     */
+    public $richContent;
+
+    /**
+     * @return string The value set by the merchandiser.
      */
     public function getRichContent()
     {
-        return $this->getContent();
+        return $this->richContent;
     }
 
     /**
-     * @param string $richContent
+     * @param string $richContent Set the rich content.
      *
      * @return RichContentZone
      */
     public function setRichContent($richContent)
     {
-        return $this->setContent($richContent);
+        $this->richContent = $richContent;
+        return $this;
     }
 
     /**

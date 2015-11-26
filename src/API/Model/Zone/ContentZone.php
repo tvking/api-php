@@ -4,24 +4,31 @@ namespace GroupByInc\API\Model;
 
 use JMS\Serializer\Annotation as JMS;
 
-class ContentZone extends AbstractContentZone
+class ContentZone extends Zone
 {
     /**
-     * @return string
+     * @var string
+     * @JMS\Type("string")
+     */
+    public $content;
+
+    /**
+     * @return string If this zone is not a Record zone this will represent the value set by the merchandiser.
      */
     public function getContent()
     {
-        return parent::getContent();
+        return $this->content;
     }
 
     /**
-     * @param string $content
+     * @param string $content Set the content.
      *
      * @return ContentZone
      */
     public function setContent($content)
     {
-        return parent::setContent($content);
+        $this->content = $content;
+        return $this;
     }
 
     /**
