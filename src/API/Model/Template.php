@@ -24,7 +24,7 @@ class Template
     public $ruleName;
     /**
      * @var Zone[]
-     * @JMS\Type("array<GroupByInc\API\Model\Zone>")
+     * @JMS\Type("array<string,GroupByInc\API\Model\Zone>")
      */
     public $zones = array();
 

@@ -224,7 +224,9 @@ class JsonDeserializeTest extends PHPUnit_Framework_TestCase
         $json = json_decode(Json::$TEMPLATE);
         $this->assertEquals($json->name, $template->getName());
         $this->assertEquals($json->ruleName, $template->getRuleName());
-        $this->assertEquals([Object::$CONTENT_ZONE, Object::$RECORD_ZONE], $template->getZones());
+        $zones = $template->getZones();
+        $this->assertEquals(Object::$CONTENT_ZONE, $zones["content_zone"]);
+        $this->assertEquals(Object::$RECORD_ZONE, $zones["record_zone"]);
     }
 
     public function testDeserializeRestrictNavigation()

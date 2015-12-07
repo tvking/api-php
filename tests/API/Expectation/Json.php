@@ -39,7 +39,7 @@ class Json
             '"name":"gorbachev","type":"Record"}';
 
         self::$TEMPLATE = '{"_id":"fad87g114","name":"bulbous","ruleName":"carmageddon",' .
-            '"zones":[' . self::$CONTENT_ZONE . ',' . self::$RECORD_ZONE . ']}';
+            '"zones":{"content_zone":' . self::$CONTENT_ZONE . ',"record_zone":' . self::$RECORD_ZONE . '}}';
 
         self::$CLUSTER = '{"term":"some","records":[' . self::$CLUSTER_RECORD . ']}';
 
