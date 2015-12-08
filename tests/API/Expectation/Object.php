@@ -168,7 +168,10 @@ class Object
         self::$TEMPLATE->setId("fad87g114")
             ->setName("bulbous")
             ->setRuleName("carmageddon")
-            ->setZones(array(self::$CONTENT_ZONE, self::$RECORD_ZONE));
+            ->setZones(array(
+                "content_zone" => self::$CONTENT_ZONE,
+                "record_zone" => self::$RECORD_ZONE
+            ));
 
         self::$CUSTOM_URL_PARAM = new CustomUrlParam();
         self::$CUSTOM_URL_PARAM->setKey("guava")->setValue("mango");
