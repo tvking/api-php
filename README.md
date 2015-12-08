@@ -25,12 +25,12 @@ For more on robo php taskrunner see [here](http://codegyre.github.io/Robo/).
 Add the following to the `require` block of your composer.json
 
 ```json
-"groupby/api": "2.0.243"
+"groupby/api": "2.0.244"
 ```
 
 or run
 
-    composer require groupby/api:2.0.243
+    composer require groupby/api:2.0.244
 
 ### Examples
 
@@ -45,3 +45,8 @@ $results = $bridge->search($query);
 ```
 
 ### [Quickstart Web Application](https://github.com/groupby/quickstart-php)
+Look [here]() for an example of how to load the annotations used by our API for serialization.
+
+#### Changes
+
+As of **v2.0.44** zones in a template will be serialized as an array with the names of the zones as keys.
