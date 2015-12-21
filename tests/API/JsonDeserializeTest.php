@@ -262,7 +262,6 @@ class JsonDeserializeTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(Object::$TEMPLATE, $results->getTemplate());
         $this->assertEquals([Object::$RECORD], $results->getRecords());
         $this->assertEquals([Object::$NAVIGATION], $results->getAvailableNavigation());
-        $this->assertEquals([Object::$CLUSTER], $results->getClusters());
         $this->assertEquals([Object::$METADATA], $results->getSiteParams());
         $this->assertEquals([Object::$NAVIGATION], $results->getSelectedNavigation());
     }

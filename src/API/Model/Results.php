@@ -93,11 +93,6 @@ class Results
      * @JMS\Type("array<GroupByInc\API\Model\Metadata>")
      */
     public $siteParams = array();
-    /**
-     * @var Cluster[]
-     * @JMS\Type("array<GroupByInc\API\Model\Cluster>")
-     */
-    public $clusters = array();
 
     /**
      * @return string[] A list of spell corrections based on the search term.
@@ -257,22 +252,6 @@ class Results
     public function setTotalRecordCount($totalRecordCount)
     {
         $this->totalRecordCount = $totalRecordCount;
-    }
-
-    /**
-     * @return Cluster[] The list of clusters.
-     */
-    public function getClusters()
-    {
-        return $this->clusters;
-    }
-
-    /**
-     * @param Cluster[] $clusters Set the search clusters.
-     */
-    public function setClusters($clusters)
-    {
-        $this->clusters = $clusters;
     }
 
     /**

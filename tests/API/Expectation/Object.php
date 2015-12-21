@@ -204,6 +204,8 @@ class Object
         self::$REQUEST->sort = array(self::$SORT);
         self::$REQUEST->fields = array("pineapple", "grape", "clementine");
         self::$REQUEST->orFields = array("pumpernickel", "rye");
+        self::$REQUEST->includedNavigations = array("height");
+        self::$REQUEST->excludedNavigations = array("rating");
         self::$REQUEST->refinements = array(self::$REFINEMENT_RANGE, self::$REFINEMENT_VALUE);
         self::$REQUEST->customUrlParams = array(self::$CUSTOM_URL_PARAM);
         self::$REQUEST->wildcardSearchEnabled = true;
@@ -217,7 +219,6 @@ class Object
         self::$RESULTS = new Results();
         self::$RESULTS->setArea("christmas");
         self::$RESULTS->setBiasingProfile("unbiased");
-        self::$RESULTS->setClusters(array(Object::$CLUSTER));
         self::$RESULTS->setAvailableNavigation(array(Object::$NAVIGATION));
         self::$RESULTS->setDidYouMean(array("square", "skewer"));
         self::$RESULTS->setErrors("criminey!");

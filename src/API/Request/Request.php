@@ -36,6 +36,11 @@ class Request
     public $refinements = array();
     /** @var CustomUrlParam[] */
     public $customUrlParams = array();
+    
+    /** @var string[] */
+    public $includedNavigations;
+    /** @var string[] */
+    public $excludedNavigations;
 
     /** @var int */
     public $skip;
