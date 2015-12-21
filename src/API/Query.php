@@ -60,6 +60,10 @@ class Query
     /** @var Navigation[] */
     private $navigations = array();
     /** @var string[] */
+    private $includedNavigations = array();
+    /** @var string[] */
+    private $excludedNavigations = array();
+    /** @var string[] */
     private $fields = array();
     /** @var string[] */
     private $orFields = array();
@@ -143,6 +147,14 @@ class Query
         $request->customUrlParams = $this->customUrlParams;
         $request->refinements = $this->generateSelectedRefinements($this->navigations);
         $request->restrictNavigation = $this->restrictNavigation;
+
+        if (!empty($this->includedNavigations)) {
+            $request->includedNavigations = $this->includedNavigations;
+        }
+
+        if (!empty($this->excludedNavigations)) {
+            $request->excludedNavigations = $this->excludedNavigations;
+        }
 
         $pruneRefinements = $this->pruneRefinements;
         if (isset($pruneRefinements) && $pruneRefinements === false) {
@@ -311,6 +323,38 @@ class Query
     public function addFields($fields)
     {
         $this->fields = array_merge($this->fields, $fields);
+    }
+
+    /**
+     * @return string[] A list of which navigations to return from the bridge.
+     */
+    public function getIncludedNavigations()
+    {
+        return $this->includedNavigations;
+    }
+
+    /**
+     * @param string[] $navigations A list of which navigations to return from the bridge.
+     */
+    public function addIncludedNavigations($navigations)
+    {
+        $this->includedNavigations = array_merge($this->includedNavigations, $navigations);
+    }
+
+    /**
+     * @return string[] A list of which navigations to not return from the bridge.
+     */
+    public function getExcludedNavigations()
+    {
+        return $this->excludedNavigations;
+    }
+
+    /**
+     * @param string[] $navigations A list of which navigations to not return from the bridge.
+     */
+    public function addExcludedNavigations($navigations)
+    {
+        $this->excludedNavigations = array_merge($this->excludedNavigations, $navigations);
     }
 
     /**

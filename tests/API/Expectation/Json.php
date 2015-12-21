@@ -54,8 +54,9 @@ class Json
             '"area":"surface","skip":12,"pageSize":30,"biasingProfile":"ballooning","language":"en",' .
             '"pruneRefinements":true,"returnBinary":false,"query":"cantaloupe",' .
             '"sort":[' . self::$SORT . '],"fields":["pineapple","grape","clementine"],' .
-            '"orFields":["pumpernickel","rye"],"refinements":[' . self::$REFINEMENT_RANGE . ',' .
-            self::$REFINEMENT_VALUE . '],' . '"customUrlParams":[' . self::$CUSTOM_URL_PARAM .
+            '"orFields":["pumpernickel","rye"],"includedNavigations":["height"], "excludedNavigations":["rating"],' .
+            '"refinements":[' . self::$REFINEMENT_RANGE . ',' . self::$REFINEMENT_VALUE .
+            '],' . '"customUrlParams":[' . self::$CUSTOM_URL_PARAM .
             '],' . '"restrictNavigation":' . self::$RESTRICT_NAVIGATION . ',"refinementQuery":"cranberry",' .
             '"wildcardSearchEnabled":true,"matchStrategy":' . self::$MATCH_STRATEGY . '}';
 
