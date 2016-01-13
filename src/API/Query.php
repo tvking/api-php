@@ -2,6 +2,7 @@
 
 namespace GroupByInc\API;
 
+use GroupByInc\API\Model\Biasing as MBiasing;
 use GroupByInc\API\Model\CustomUrlParam;
 use GroupByInc\API\Model\MatchStrategy as MMatchStrategy;
 use GroupByInc\API\Model\Navigation;
@@ -11,6 +12,7 @@ use GroupByInc\API\Model\Refinement\Type;
 use GroupByInc\API\Model\RefinementRange;
 use GroupByInc\API\Model\RefinementValue;
 use GroupByInc\API\Model\Sort as MSort;
+use GroupByInc\API\Request\Biasing;
 use GroupByInc\API\Request\MatchStrategy as RMatchStrategy;
 use GroupByInc\API\Request\PartialMatchRule as RPartialMatchRule;
 use GroupByInc\API\Request\RefinementsRequest;
@@ -78,6 +80,8 @@ class Query
 //    private $returnBinary = false;
     /** @var RestrictNavigation */
     private $restrictNavigation;
+    /** @var MBiasing */
+    private $biasing;
 
     /** @var Serializer */
     private $serializer;
@@ -147,6 +151,10 @@ class Query
         $request->customUrlParams = $this->customUrlParams;
         $request->refinements = $this->generateSelectedRefinements($this->navigations);
         $request->restrictNavigation = $this->restrictNavigation;
+
+        if (!empty($this->biasing)) {
+            $request->biasing = self::convertBiasing($this->biasing);
+        }
 
         if (!empty($this->includedNavigations)) {
             $request->includedNavigations = $this->includedNavigations;
@@ -707,6 +715,34 @@ class Query
     }
 
     /**
+     * @return MBiasing
+     */
+    public function getBiasing()
+    {
+        return $this->biasing;
+    }
+
+    /**
+     * Add a biasing profile, which is defined at query time.
+     *
+     * @param MBiasing $biasing
+     */
+    public function setBiasing($biasing)
+    {
+        $this->biasing = $biasing;
+    }
+
+    /**
+     * @param string[] $bringToTop
+     */
+    public function setBringToTop($bringToTop) {
+        if (empty($this->biasing)) {
+            $this->biasing = new MBiasing();
+        }
+        $this->biasing->bringToTop = $bringToTop;
+    }
+
+    /**
      * @return string A string representation of all of the currently set refinements.
      */
     public function getRefinementString()
@@ -806,6 +842,22 @@ class Query
                 ->setPercentage($rule->isPercentage());
         }
         return $convertedRule;
+    }
+
+    /**
+     * @param MBiasing $biasing
+     *
+     * @return Biasing
+     */
+    protected static function convertBiasing($biasing)
+    {
+        /** @var Biasing $convertedBiasing */
+        $convertedBiasing = null;
+        if (!empty($biasing) && !empty($biasing->bringToTop)) {
+            $convertedBiasing = new Biasing();
+            $convertedBiasing->setBringToTop($biasing->bringToTop);
+        }
+        return $convertedBiasing;
     }
 
 }

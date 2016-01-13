@@ -25,6 +25,8 @@ class Request
     public $restrictNavigation;
     /** @var MatchStrategy */
     public $matchStrategy;
+    /** @var Biasing */
+    public $biasing;
 
     /** @var Sort[] */
     public $sort = array();

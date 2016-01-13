@@ -15,6 +15,7 @@ class Json
     public static $CUSTOM_URL_PARAM = '{"key":"guava","value":"mango"}';
     public static $SORT = '{"field":"price","order":"Descending"}';
     public static $PARTIAL_MATCH_RULE = '{"terms":2,"termsGreaterThan":45,"mustMatch":4,"percentage":true}';
+    public static $BIASING = '{"bringToTop":["1314","1425","5153"]}';
     public static $REFINEMENT_MATCH;
     public static $RECORD;
     public static $RECORD_ZONE;
@@ -58,7 +59,7 @@ class Json
             '"refinements":[' . self::$REFINEMENT_RANGE . ',' . self::$REFINEMENT_VALUE .
             '],' . '"customUrlParams":[' . self::$CUSTOM_URL_PARAM .
             '],' . '"restrictNavigation":' . self::$RESTRICT_NAVIGATION . ',"refinementQuery":"cranberry",' .
-            '"wildcardSearchEnabled":true,"matchStrategy":' . self::$MATCH_STRATEGY . '}';
+            '"wildcardSearchEnabled":true,"matchStrategy":' . self::$MATCH_STRATEGY . ',"biasing":' . self::$BIASING . '}';
 
         self::$REFINEMENTS_REQUEST = '{"originalQuery":' . self::$REQUEST . ',"navigationName":"height"}';
 
