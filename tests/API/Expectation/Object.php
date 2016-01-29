@@ -19,6 +19,8 @@ use GroupByInc\API\Model\RichContentZone;
 use GroupByInc\API\Model\Sort;
 use GroupByInc\API\Model\Template;
 use GroupByInc\API\Model\Zone;
+use GroupByInc\API\Request\Bias;
+use GroupByInc\API\Request\Bias\Strength;
 use GroupByInc\API\Request\Biasing;
 use GroupByInc\API\Request\MatchStrategy;
 use GroupByInc\API\Request\PartialMatchRule;
@@ -194,6 +196,12 @@ class Object
 
         self::$BIASING = new Biasing();
         self::$BIASING->setBringToTop(["1314", "1425", "5153"]);
+        self::$BIASING->setAugmentBiases(true);
+        self::$BIASING->setInfluence(8.0);
+        self::$BIASING->setBiases(array(
+            (new Bias())->setName("keys")->setContent("values")->setStrength(Strength::Strong_Increase),
+            (new Bias())->setName("all")->setContent("my")->setStrength(Strength::Strong_Decrease)
+        ));
 
         self::$REQUEST = new Request();
         self::$REQUEST->clientKey = "adf7h8er7h2r";
