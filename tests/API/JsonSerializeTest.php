@@ -146,6 +146,11 @@ class JsonSerializeTest extends PHPUnit_Framework_TestCase
             $this->serialize(Object::$MATCH_STRATEGY));
     }
 
+    public function testEncodeBiasing()
+    {
+        $this->assertJsonStringEqualsJsonString(Json::$BIASING, $this->serialize(Object::$BIASING));
+    }
+
     public function testEncodeRequest()
     {
         $this->assertJsonStringEqualsJsonString(Json::$REQUEST, $this->serialize(Object::$REQUEST));
