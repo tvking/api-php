@@ -44,6 +44,8 @@ class Symbol
 class Query
 {
     /** @var string */
+    private $userId;
+    /** @var string */
     private $query;
     /** @var int */
     private $skip = 0;
@@ -143,6 +145,7 @@ class Query
         $request->clientKey = $clientKey;
         $request->area = $this->area;
         $request->collection = $this->collection;
+        $request->userId = $this->userId;
         $request->query = $this->query;
         $request->fields = $this->fields;
         $request->orFields = $this->orFields;
@@ -916,6 +919,25 @@ class Query
             }
         }
         return $hasData ? $convertedBiasing : null;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUserId()
+    {
+        return $this->userId;
+    }
+
+    /**
+     * @param string $userId
+     *
+     * @return Query
+     */
+    public function setUserId($userId)
+    {
+        $this->userId = $userId;
+        return $this;
     }
 
 }

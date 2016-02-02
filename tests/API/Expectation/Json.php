@@ -52,7 +52,7 @@ class Json
         self::$MATCH_STRATEGY = '{"rules":[' . self::$PARTIAL_MATCH_RULE . ']}';
 
         self::$REQUEST = '{"clientKey":"adf7h8er7h2r","collection":"ducks",' .
-            '"area":"surface","skip":12,"pageSize":30,"biasingProfile":"ballooning","language":"en",' .
+            '"area":"surface","userId":"farmer","skip":12,"pageSize":30,"biasingProfile":"ballooning","language":"en",' .
             '"pruneRefinements":true,"returnBinary":false,"query":"cantaloupe",' .
             '"sort":[' . self::$SORT . '],"fields":["pineapple","grape","clementine"],' .
             '"orFields":["pumpernickel","rye"],"includedNavigations":["height"], "excludedNavigations":["rating"],' .

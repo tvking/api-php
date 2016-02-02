@@ -205,6 +205,7 @@ class Object
 
         self::$REQUEST = new Request();
         self::$REQUEST->clientKey = "adf7h8er7h2r";
+        self::$REQUEST->userId = "farmer";
         self::$REQUEST->collection = "ducks";
         self::$REQUEST->area = "surface";
         self::$REQUEST->skip = 12;
