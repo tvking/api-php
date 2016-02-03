@@ -25,12 +25,12 @@ For more on robo php taskrunner see [here](http://codegyre.github.io/Robo/).
 Add the following to the `require` block of your composer.json
 
 ```json
-"groupby/api": "2.0.244"
+"groupby/api": "2.0.246"
 ```
 
 or run
 
-    composer require groupby/api:2.0.244
+    composer require groupby/api:2.0.246
 
 ### Examples
 
