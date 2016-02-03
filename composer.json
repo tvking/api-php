@@ -21,7 +21,7 @@
   ],
   "require": {
     "php": ">=5.4.0",
-    "nategood/httpful": "dev-addConnectionTimeout",
+    "nategood/httpful": "dev-addConnectionTimeout as 0.2.19",
     "jms/serializer": "1.0.0"
   },
   "require-dev": {
