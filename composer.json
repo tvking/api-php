@@ -13,9 +13,15 @@
   "support": {
     "issues": "https://github.com/groupby/api-php/issues"
   },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/tvking/httpful"
+    }
+  ],
   "require": {
     "php": ">=5.4.0",
-    "nategood/httpful": "0.2.19",
+    "nategood/httpful": "dev-addConnectionTimeout",
     "jms/serializer": "1.0.0"
   },
   "require-dev": {
