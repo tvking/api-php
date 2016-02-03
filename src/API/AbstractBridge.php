@@ -34,6 +34,10 @@ abstract class AbstractBridge
     private $bridgeRefinementsUrl;
     /** @var Serializer */
     private $serializer;
+    /** @var int seconds*/
+    private $connectionTimeout = 0;
+    /** @var int seconds*/
+    private $timeout = 0;
 
     /**
      * @param string $clientKey
@@ -72,6 +76,32 @@ abstract class AbstractBridge
         $content = $query->getBridgeRefinementsJson($this->clientKey, $navigationName);
 
         return $this->query($this->bridgeRefinementsUrl, $content, self::REFINEMENTS_RESULT_CLASS);
+    }
+
+    /**
+     * @param int|float $timeout
+     */
+    public function setTimeout($timeout)
+    {
+        if (!preg_match('^\d+(\.\d+)?', $timeout)) {
+            throw new Exception(
+                'Invalid timout expected positive decimal given: '. var_export($timeout, true)
+            );
+        }
+        $this->timeout = $timeout;
+    }
+
+    /**
+     * @param int|float $connectionTimeout
+     */
+    public function setConnectionTimeout($connectionTimeout)
+    {
+        if (!preg_match('^\d+(\.\d+)?', $connectionTimeout)) {
+            throw new Exception(
+                'Invalid connection timeout expected positive decimal given: '. var_export($connectionTimeout, true)
+            );
+        }
+        $this->connection_timeout = $connection_timeout;
     }
 
     /**
@@ -133,6 +163,8 @@ abstract class AbstractBridge
         return Request::post($url . "?retry=$tries")
             ->body($content)
             ->sendsType(Mime::JSON)
+            ->timeout($this->timeout)
+            ->setConnectionTimeout($this->connectionTimeout)
             ->send();
     }
 
