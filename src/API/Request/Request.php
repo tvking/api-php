@@ -10,6 +10,8 @@ class Request
     /** @var string */
     public $clientKey;
     /** @var string */
+    public $userId;
+    /** @var string */
     public $collection;
     /** @var string */
     public $area;
