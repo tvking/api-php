@@ -876,7 +876,7 @@ class Query
      */
     protected static function convertBias($bias)
     {
-        return (new MBias())->setName($bias->getName())->setContent($bias->getStrength())->setStrength($bias->getStrength());
+        return (new MBias())->setName($bias->getName())->setContent($bias->getContent())->setStrength($bias->getStrength());
     }
 
     /**
@@ -910,7 +910,7 @@ class Query
             }
             if($biasing->getBiases() != array()) {
                 $convertedBiasing->setBiases(self::convertBiases($biasing->getBiases()));
-                $convertedBiasing->setAugmentBiases($convertedBiasing->isAugmentBiases());
+                $convertedBiasing->setAugmentBiases($biasing->isAugmentBiases());
                 $hasData = true;
             }
             if($biasing->getInfluence() !== null) {
