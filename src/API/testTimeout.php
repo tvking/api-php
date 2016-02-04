@@ -38,6 +38,13 @@
  *
  * revert the iptables change 
  * sudo iptables -D INPUT -p tcp --destination-port 80 -j DROP
+ *
+ *
+ * To see the request hang until the 60 seconds are complete on the test search endpoint,
+ * delete the following lines:
+ *
+ * $bridge->setConnectionTimeout(1);
+ * $bridge->setTimeout(2);
  */
 
 namespace GroupByInc\API;
