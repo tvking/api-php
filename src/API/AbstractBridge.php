@@ -83,7 +83,7 @@ abstract class AbstractBridge
      */
     public function setTimeout($timeout)
     {
-        if (!preg_match('^\d+(\.\d+)?', $timeout)) {
+        if (!preg_match('/^\d+(\.\d+)?/', $timeout)) {
             throw new Exception(
                 'Invalid timout expected positive decimal given: '. var_export($timeout, true)
             );
@@ -96,12 +96,12 @@ abstract class AbstractBridge
      */
     public function setConnectionTimeout($connectionTimeout)
     {
-        if (!preg_match('^\d+(\.\d+)?', $connectionTimeout)) {
+        if (!preg_match('/^\d+(\.\d+)?/', $connectionTimeout)) {
             throw new Exception(
                 'Invalid connection timeout expected positive decimal given: '. var_export($connectionTimeout, true)
             );
         }
-        $this->connection_timeout = $connection_timeout;
+        $this->connectionTimeout = $connectionTimeout;
     }
 
     /**
